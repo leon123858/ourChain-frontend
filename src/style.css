@@ -1,0 +1,12 @@
+@import '~antd/dist/antd.css';
+
+body {
+	font-family: 'Helvetica', 'Arial', 'LiHei Pro', '黑體-繁', '微軟正黑體',
+		sans-serif;
+	background-color: #282c34;
+}
+
+.fontSetting {
+	font-family: 'Helvetica', 'Arial', 'LiHei Pro', '黑體-繁',
+		'Microsoft JhengHei', sans-serif;
+}
