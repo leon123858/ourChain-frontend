@@ -1,39 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import homePicture from './resource/logo512.png';
-import { linkStyle, header } from './style.js';
+import { Col, Row, Image } from 'antd';
+import { header, linkStyle } from './style';
+import icon from './resource/logo512.png';
+import MidCol from './utils/MidCol';
 
 function App() {
 	return (
 		<div className='App'>
-			{/* <Box sx={{ flexGrow: 1 }}>
-				<Grid container spacing={2}>
-					<Grid item xs={12} style={header}>
-						<h1>
-							OurChain NFT 交易平台<small>本機版</small>
-						</h1>
-						<strong>OurChain NFT platform</strong>
-					</Grid>
-					<Grid item xs={12} style={{ textAlign: 'center' }}>
-						<img
-							style={{ height: '40vmin' }}
-							src={homePicture}
-							loading='lazy'
-							alt='封面圖'
-						/>
-					</Grid>
-					<Grid item xs={12} style={{ textAlign: 'center' }}>
-						<Link to='/user' style={linkStyle}>
+			<Row>
+				<Col span={24} style={{ minHeight: '5vh' }}></Col>
+				<Col span={24} style={header}>
+					OurNFT<small>OurChain NFT platform</small>
+				</Col>
+				<MidCol
+					data={<Image width={'100%'} preview={false} src={icon} />}
+				></MidCol>
+				<Col span={24} style={{ minHeight: '5vh' }}></Col>
+				<MidCol
+					data={
+						<Link to='/get' style={linkStyle}>
 							查看 NFT
 						</Link>
-					</Grid>
-					<Grid item xs={12} style={{ textAlign: 'center' }}>
-						<Link to='/news' style={linkStyle}>
-							新增 NFT
+					}
+				></MidCol>
+				<Col span={24} style={{ minHeight: '5vh' }}></Col>
+				<MidCol
+					data={
+						<Link to='/create' style={linkStyle}>
+							創建 NFT
 						</Link>
-					</Grid>
-				</Grid>
-			</Box> */}
+					}
+				></MidCol>
+			</Row>
 		</div>
 	);
 }

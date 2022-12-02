@@ -1,6 +1,10 @@
 export const linkStyle = {
 	color: '#09d3ac',
-	fontSize: '175%',
+	fontSize: '200%',
+	display: 'flex',
+	flexDirection: 'column',
+	alignItems: 'center',
+	justifContent: 'center',
 };
 
 export const tableHead = {
@@ -22,6 +26,7 @@ export const listItem = {
 };
 
 export const header = {
+	fontSize: '30px',
 	minHeight: '15vh',
 	display: 'flex',
 	flexDirection: 'column',

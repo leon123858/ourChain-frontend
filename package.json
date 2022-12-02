@@ -5,7 +5,7 @@
 	"author": "LeonLin",
 	"build": {
 		"appId": "arp_local_app",
-		"productName": "人才資料庫",
+		"productName": "OurNFT",
 		"mac": {
 			"icon": "build/logo512.png",
 			"target": "tar.gz"
@@ -31,6 +31,7 @@
 	"homepage": "./",
 	"private": true,
 	"dependencies": {
+		"@ant-design/icons": "^4.8.0",
 		"antd": "^5.0.3",
 		"async-lz-string": "^1.0.3",
 		"axios": "^0.26.1",
@@ -41,9 +42,13 @@
 		"react": "^16.11.0",
 		"react-dom": "^16.11.0",
 		"react-router-dom": "^5.1.2",
-		"react-scripts": "3.2.0"
+		"react-scripts": "3.2.0",
+		"shelljs": "^0.8.5"
 	},
 	"scripts": {
+		"deployContract": "cd script && node deployContract.js",
+		"addNFT": "cd script && node addNFT.js",
+		"mining": "cd script && node mining.js",
 		"start-react": "react-scripts start",
 		"build-react": "react-scripts build",
 		"test-react": "react-scripts test --env=jsdom",
