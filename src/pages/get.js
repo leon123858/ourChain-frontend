@@ -1,21 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Col, Avatar, List, Space, Button, Input } from 'antd';
+import { Row, Col, Avatar, List, Space, Button, Input, Modal } from 'antd';
 // import { SendOutlined } from '@ant-design/icons';
 import { linkStyle } from '../style.js';
 import MidCol from '../utils/MidCol';
-
-const data = Array.from({
-	length: 23,
-}).map((_, i) => ({
-	href: 'https://ant.design',
-	title: `ant design part ${i}`,
-	avatar: 'https://joeschmoe.io/api/v1/random',
-	description:
-		'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-	content:
-		'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-}));
 
 // const SendNFT = ({ icon, text }) => {
 // 	const [address, onUpdate] = useState('');
@@ -40,6 +28,7 @@ const data = Array.from({
 
 const Get = () => {
 	const [address, onUpdate] = useState('');
+	const [data, setData] = useState([]);
 	return (
 		<div>
 			<Row>
@@ -52,12 +41,38 @@ const Get = () => {
 								value={address}
 								onChange={(e) => onUpdate(e.target.value)}
 							/>
-							<Button onClick={() => {}}>刷新</Button>
+							<Button
+								onClick={async () => {
+									try {
+										const result = await window.electronRequest('get', {
+											txid: address,
+										});
+										console.log(result);
+										setData(
+											result.map((value) => {
+												const { title, url } = value;
+												return {
+													href: url,
+													title: title,
+													avatar: 'https://joeschmoe.io/api/v1/random',
+													description: 'this is our NFT default message',
+													content: 'this is ourNFT default message',
+												};
+											})
+										);
+									} catch (err) {
+										console.log(err);
+										Modal.error({ title: err.error?.message || err.error });
+									}
+								}}
+							>
+								刷新
+							</Button>
 						</Space>
 					}
 				></MidCol>
 				<List
-					style={{ padding: '50px' }}
+					style={{ padding: '50px', width: '100%' }}
 					itemLayout='vertical'
 					size='large'
 					pagination={{
@@ -78,13 +93,7 @@ const Get = () => {
 									// />,
 								]
 							}
-							extra={
-								<img
-									width={272}
-									alt='logo'
-									src='https://gw.alipayobjects.com/zos/rmsportal/mqaQswcyDLcXyDKnZfES.png'
-								/>
-							}
+							extra={<img width={272} alt='logo' src={item.href} />}
 						>
 							<List.Item.Meta
 								avatar={<Avatar src={item.avatar} />}

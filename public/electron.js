@@ -1,9 +1,10 @@
 const electron = require('electron');
 const path = require('path');
 const isDev = require('electron-is-dev');
+const { ApiClient } = require('./utils/apiClient');
 // get component
-const { app, BrowserWindow, shell } = electron;
-
+const { app, BrowserWindow, shell, ipcMain } = electron;
+const apiClient = new ApiClient();
 // windows setting
 
 let mainWindow;
@@ -37,16 +38,47 @@ function createWindow() {
 
 app.on('ready', async function () {
 	createWindow();
+	await apiClient.init();
 });
 
-app.on('window-all-closed', () => {
+app.on('window-all-closed', async () => {
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
+	await apiClient.disconnect();
 });
 
 app.on('activate', () => {
 	if (mainWindow === null) {
 		createWindow();
+	}
+});
+
+// Main Process
+ipcMain.on('api', async (event, args) => {
+	const { method, params } = args;
+	try {
+		switch (method) {
+			case 'get':
+				event.sender.send(
+					`api:${method}`,
+					await apiClient.fetchNFTs(params.txid)
+				);
+				break;
+			case 'create':
+				{
+					const { txid, title, url } = params;
+					event.sender.send(
+						`api:${method}`,
+						await apiClient.addNFT(txid, { title, url })
+					);
+				}
+				break;
+			default:
+				event.sender.send(`api:${method}`, { error: 'not exist method' });
+				break;
+		}
+	} catch (err) {
+		event.sender.send(`api:${method}`, { error: err });
 	}
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Row, Col, Button, Form, Input } from 'antd';
+import { Row, Col, Button, Form, Input, Modal } from 'antd';
 import { linkStyle } from '../style.js';
 import MidCol from '../utils/MidCol';
 
@@ -42,9 +42,20 @@ const Create = () => {
 							labelCol={{ span: 8 }}
 							wrapperCol={{ span: 16 }}
 							initialValues={{ remember: true }}
-							onFinish={() => {}}
-							onFinishFailed={() => {}}
-							autoComplete='off'
+							onFinish={async (data) => {
+								console.log(data);
+								try {
+									await window.electronRequest('create', {
+										txid: data.id,
+										title: data.title,
+										url: data.url,
+									});
+								} catch (err) {
+									console.log(err);
+									Modal.error({ title: err.error?.message || err.error });
+								}
+							}}
+							autoComplete='on'
 						>
 							<Form.Item label='設定'>
 								<span className='ant-form-text'>上傳新 NFT</span>
