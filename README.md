@@ -4,6 +4,8 @@ create NFT system for OurCoin
 
 ## basic
 
+should start mongodb and ourCoin first
+
 ```shell
 # 創建新帳戶(複製帳戶)
 yarn deployContract
