@@ -56,7 +56,7 @@ const Get = () => {
 													title: title,
 													avatar: 'https://joeschmoe.io/api/v1/random',
 													description: 'this is our NFT default message',
-													content: 'this is ourNFT default message',
+													content: url,
 												};
 											})
 										);

@@ -4,7 +4,7 @@
 	"description": "ARP local app",
 	"author": "LeonLin",
 	"build": {
-		"appId": "arp_local_app",
+		"appId": "our_nft",
 		"productName": "OurNFT",
 		"mac": {
 			"icon": "build/logo512.png",

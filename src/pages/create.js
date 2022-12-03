@@ -5,6 +5,7 @@ import { linkStyle } from '../style.js';
 import MidCol from '../utils/MidCol';
 
 const Create = () => {
+	const [form] = Form.useForm();
 	return (
 		<div>
 			<Row>
@@ -37,19 +38,24 @@ const Create = () => {
 				<MidCol
 					data={
 						<Form
+							form={form}
 							style={{ backgroundColor: 'white', padding: '10px' }}
 							name='basic'
 							labelCol={{ span: 8 }}
 							wrapperCol={{ span: 16 }}
 							initialValues={{ remember: true }}
 							onFinish={async (data) => {
-								console.log(data);
 								try {
 									await window.electronRequest('create', {
 										txid: data.id,
 										title: data.title,
 										url: data.url,
 									});
+									Modal.success({
+										title: '上傳成功',
+										content: '請耐心等待上鍊',
+									});
+									form.resetFields();
 								} catch (err) {
 									console.log(err);
 									Modal.error({ title: err.error?.message || err.error });
