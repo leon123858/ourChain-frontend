@@ -47,6 +47,7 @@ export default function TodoList({
         {data.map((item, i) => {
           return (
             <TodoItem
+              key={`todo-key-${i}`}
               id={`todo-${i}`}
               title={item.title}
               isComplete={item.completed}

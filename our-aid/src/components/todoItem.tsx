@@ -12,7 +12,7 @@ export default function TodoItem({
   deleteCallback: () => void;
 }) {
   return (
-    <li className="py-4">
+    <li key={`${id}`} className="py-4">
       <div className="flex items-center">
         <input
           id={id}
@@ -20,7 +20,7 @@ export default function TodoItem({
           type="checkbox"
           checked={isComplete}
           className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded"
-          onClick={() => {
+          onChange={() => {
             clickCallback();
           }}
         />
