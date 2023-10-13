@@ -1,17 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import TodoItem from "./todoItem";
+import { type } from "os";
+
+const HOST = "http://localhost:8080";
+
+type TodoItemType = {
+  aid: string;
+  completed: boolean;
+  title: string;
+  _id: string;
+};
 
 export default function TodoList({
   defaultData = [],
 }: {
-  defaultData?: { title: string; completed: boolean }[];
+  defaultData?: TodoItemType[];
 }) {
+  const [aid, setAid] = useState("");
   const [input, setInput] = useState("");
-  const [data, setData] = useState<{ title: string; completed: boolean }[]>(
+  const [data, setData] = useState<TodoItemType[]>(
     JSON.parse(JSON.stringify(defaultData))
   );
+
+  useEffect(() => {
+    setAid(localStorage.getItem("aid") || "");
+  }, []);
+  useEffect(() => {
+    if (!aid) {
+      return;
+    }
+    !(async () => {
+      const res = await fetch(`${HOST}/get/todo?aid=${aid}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      const json = await res.json();
+      console.log(json);
+      if (res.status === 200 && json.data) {
+        setData(json);
+      }
+    })();
+  }, [aid]);
 
   return (
     <div className="max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden mt-16">
@@ -32,10 +65,26 @@ export default function TodoList({
           <button
             className="flex-shrink-0 bg-teal-500 hover:bg-teal-700 border-teal-500 hover:border-teal-700 text-sm border-4 text-white py-1 px-2 rounded"
             type="button"
-            onClick={() => {
+            onClick={async () => {
               if (input) {
-                setData([...data, { title: input, completed: false }]);
+                // setData([...data, { title: input, completed: false }]);
                 setInput("");
+                if (!aid) {
+                  return;
+                }
+                // const res = await fetch(`${HOST}/create/todo`, {
+                //   method: "POST",
+                //   headers: {
+                //     "Content-Type": "application/json",
+                //   },
+                //   body: JSON.stringify({
+                //     aid,
+                //     title: input,
+                //     completed: false,
+                //   }),
+                // });
+                // const json = await res.json();
+                // console.log(json);
               }
             }}
           >

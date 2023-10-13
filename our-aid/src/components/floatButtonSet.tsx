@@ -8,6 +8,9 @@ export default function FloatButtonSet() {
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
 
+  const [userName, setUserName] = useState("");
+  const [password, setPassword] = useState("");
+
   return (
     <>
       <div className="flex flex-col space-y-5 fixed bottom-4 right-4">
@@ -41,9 +44,12 @@ export default function FloatButtonSet() {
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="username"
               type="text"
               placeholder="請輸入帳號"
+              value={userName}
+              onChange={(e) => {
+                setUserName(e.target.value);
+              }}
             />
           </div>
           <div className="mb-4">
@@ -55,15 +61,23 @@ export default function FloatButtonSet() {
             </label>
             <input
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              id="password"
               type="password"
               placeholder="請輸入密碼"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
             />
           </div>
           <div className="flex items-center justify-center">
             <button
               className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
               type="button"
+              onClick={() => {
+                // write aid into local storage
+                localStorage.setItem("aid", userName);
+                window.location.reload();
+              }}
             >
               登入
             </button>
