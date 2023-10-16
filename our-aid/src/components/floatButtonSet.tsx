@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { use, useEffect, useState } from 'react';
 import FloatButton from './floatButton';
 import Modal from './modal';
 import AidButton from './aidButton';
@@ -12,6 +12,15 @@ export default function FloatButtonSet() {
 
 	const [userName, setUserName] = useState('');
 	const [password, setPassword] = useState('');
+	const [aid, setAid] = useState('');
+
+	useEffect(() => {
+		// read aid from local storage
+		const aid = localStorage.getItem('aid');
+		if (aid) {
+			setAid(aid);
+		}
+	}, []);
 
 	return (
 		<>
@@ -41,27 +50,52 @@ export default function FloatButtonSet() {
 					setIsAidModalOpen(false);
 				}}
 			>
-				<div className='w-full max-w-sm bg-white rounded-lg shadow'>
+				<div className='w-full max-w-sm bg-white rounded-lg'>
 					<br />
 					<div className='flex flex-col items-center pb-10'>
 						<h5 className='mb-1 text-xl font-medium text-gray-900'>
 							Bonnie Green
 						</h5>
 						<span className='text-sm text-gray-500'>Visual Designer</span>
-						<div className='flex mt-4 space-x-3 md:mt-6'>
-							<a
-								href='#'
-								className='inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'
-							>
-								Add friend
-							</a>
-							<a
-								href='#'
-								className='inline-flex items-center px-4 py-2 text-sm font-medium text-center text-gray-900 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-700 dark:focus:ring-gray-700'
-							>
-								Message
-							</a>
-						</div>
+						<br />
+						<ul className='space-y-4 text-left text-gray-500 dark:text-gray-400'>
+							<li className='flex items-center space-x-3'>
+								<svg
+									className='flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400'
+									aria-hidden='true'
+									xmlns='http://www.w3.org/2000/svg'
+									fill='none'
+									viewBox='0 0 16 12'
+								>
+									<path
+										stroke='currentColor'
+										stroke-linecap='round'
+										stroke-linejoin='round'
+										stroke-width='2'
+										d='M1 5.917 5.724 10.5 15 1.5'
+									/>
+								</svg>
+								<span>deploycontract: /root/Desktop/ourchain/aid.cpp</span>
+							</li>
+							<li className='flex items-center space-x-3'>
+								<svg
+									className='flex-shrink-0 w-3.5 h-3.5 text-green-500 dark:text-green-400'
+									aria-hidden='true'
+									xmlns='http://www.w3.org/2000/svg'
+									fill='none'
+									viewBox='0 0 16 12'
+								>
+									<path
+										stroke='currentColor'
+										stroke-linecap='round'
+										stroke-linejoin='round'
+										stroke-width='2'
+										d='M1 5.917 5.724 10.5 15 1.5'
+									/>
+								</svg>
+								<span>callcontract: newAID {aid}</span>
+							</li>
+						</ul>
 					</div>
 				</div>
 			</Modal>
