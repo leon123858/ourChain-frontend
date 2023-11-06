@@ -1,5 +1,5 @@
 import React from 'react';
-import {Layout, Menu, theme} from 'antd';
+import {Button, Layout, Menu, theme} from 'antd';
 import InputPanel from "./components/InputPanel.tsx";
 import ScannerPanel from "./components/ScannerPanel.tsx";
 
@@ -12,7 +12,7 @@ const App: React.FC = () => {
     const [page, setPage] = React.useState("wallet")
 
     let pageContent = <div>404</div>
-    switch(page) {
+    switch (page) {
         case "wallet":
             pageContent = <InputPanel/>
             break
@@ -31,7 +31,7 @@ const App: React.FC = () => {
                         onClick: () => {
                             setPage("wallet")
                         }
-                    },{
+                    }, {
                         key: "scanner",
                         label: "scanner",
                         onClick: () => {
@@ -42,13 +42,28 @@ const App: React.FC = () => {
             </Header>
             <Layout>
                 <Sider width={200} style={{background: colorBgContainer}}>
-                    <Menu
-                        mode="inline"
-                        defaultSelectedKeys={[]}
-                        defaultOpenKeys={[]}
-                        style={{height: '100%', borderRight: 0}}
-                        items={[]}
-                    />
+                    <Button style={{width: "100%", marginTop: "10%"}} onClick={async () => {
+                        // POST http://localhost:8080/block/generate
+                        const res = await fetch("http://localhost:8080/block/generate", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({})
+                        })
+                        const json = await res.json()
+                        console.log(json)
+                        alert(json.result)
+                    }}>加速挖礦</Button>
+                    <Button style={{width: "100%", marginTop: "10%"}} onClick={async () => {
+                        const address = prompt("請輸入地址")
+                        if (address === null) return
+                        // GET http://localhost:8080/get/privatekey?address=myoCGvSYrn1jQQadv99ZZ2hhoREdAYPGHP
+                        const res = await fetch(`http://localhost:8080/get/privatekey?address=${address}`)
+                        const json = await res.json()
+                        console.log(json)
+                        alert(json.result === "success" ? json.data : json.result)
+                    }}>生成私鑰</Button>
                 </Sider>
                 <Layout style={{padding: '0 24px 24px'}}>
                     <Content

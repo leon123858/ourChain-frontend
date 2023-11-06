@@ -1,20 +1,20 @@
 import {Flex} from "antd"
-import InputBox from "./InputBox.tsx";
 import React from "react";
+import InputPrivateKey from "./InputPrivateKey.tsx";
+import InputTxBox from "./InputTxBox.tsx";
+import InputPureContract from "./InputPureContract.tsx";
 
 function InputPanel() {
     const [privateKey, setPrivateKey] = React.useState("")
+    const [fixedKey, setFixedKey] = React.useState(false)
 
     return <Flex vertical gap={16}>
-        <InputBox title={"private key"} value={privateKey} setValueFunc={setPrivateKey} clickTarget={"生成私鑰"}
-                  clickFunc={async () => {
-                      console.warn("clickFunc")
-                  }}/>
-        <InputBox title={"private key"} value={privateKey} setValueFunc={setPrivateKey} clickTarget={"生成私鑰"}
-                  clickFunc={async () => {
-                      console.warn("clickFunc")
-                  }}/>
-    </Flex>
+        <InputPrivateKey privateKey={privateKey} setPrivateKey={setPrivateKey} fixedKey={fixedKey}
+                         setFixedKey={setFixedKey}/>
+        <InputPureContract/>
+        {
+            fixedKey && privateKey.length > 0 ? <InputTxBox privateKey={privateKey}/> : <h3>請輸入私鑰</h3>
+        }</Flex>
 }
 
 export default InputPanel
