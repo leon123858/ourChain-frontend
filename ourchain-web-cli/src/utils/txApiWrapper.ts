@@ -7,6 +7,8 @@ async function getUtxo(fee = 0.0001, targetAddress = "") {
         return;
     }
     const utxoList = utxoJson.data;
+    // random 排序 utxoList
+    utxoList.sort(() => Math.random() - 0.5);
     let targetUtxo;
     for (let i = 0; i < utxoList.length; i++) {
         if (utxoList[i].amount > fee) {
