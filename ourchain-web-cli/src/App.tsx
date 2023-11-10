@@ -2,6 +2,7 @@ import React from 'react';
 import {Button, Layout, Menu, theme} from 'antd';
 import InputPanel from "./components/InputPanel.tsx";
 import ScannerPanel from "./components/ScannerPanel.tsx";
+import {BASE_URL} from "./utils/config.ts";
 
 const {Header, Content, Sider} = Layout;
 
@@ -44,7 +45,7 @@ const App: React.FC = () => {
                 <Sider width={200} style={{background: colorBgContainer}}>
                     <Button style={{width: "100%", marginTop: "10%"}} onClick={async () => {
                         // POST http://localhost:8080/block/generate
-                        const res = await fetch("http://localhost:8080/block/generate", {
+                        const res = await fetch(`${BASE_URL}block/generate`, {
                             method: "POST",
                             headers: {
                                 "Content-Type": "application/json"
@@ -59,7 +60,7 @@ const App: React.FC = () => {
                         const address = prompt("請輸入地址")
                         if (address === null) return
                         // GET http://localhost:8080/get/privatekey?address=myoCGvSYrn1jQQadv99ZZ2hhoREdAYPGHP
-                        const res = await fetch(`http://localhost:8080/get/privatekey?address=${address}`)
+                        const res = await fetch(`${BASE_URL}get/privatekey?address=${address}`)
                         const json = await res.json()
                         console.log(json)
                         alert(json.result === "success" ? json.data : json.result)

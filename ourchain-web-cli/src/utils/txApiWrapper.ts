@@ -1,6 +1,8 @@
+import {BASE_URL} from "./config.ts";
+
 async function getUtxo(fee = 0.0001, targetAddress = "") {
     // GET http://localhost:8080/get/utxo
-    const utxoResult = await fetch("http://localhost:8080/get/utxo", {method: "GET"});
+    const utxoResult = await fetch(`${BASE_URL}get/utxo`, {method: "GET"});
     const utxoJson = await utxoResult.json();
     if (utxoJson.result !== "success") {
         console.error("Error: ", utxoJson);
@@ -43,7 +45,7 @@ async function createTx(fee = 0.0001, targetAddress = "", contract: {
         console.error("Error: no utxo available");
         return;
     }
-    const result = await fetch("http://localhost:8080/rawtransaction/create", {
+    const result = await fetch(`${BASE_URL}rawtransaction/create`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -72,7 +74,7 @@ async function createTx(fee = 0.0001, targetAddress = "", contract: {
 
 async function signContract(rawTx = "", privateKey = "") {
     // POST http://localhost:8080/rawtransaction/sign
-    const result = await fetch("http://localhost:8080/rawtransaction/sign", {
+    const result = await fetch(`${BASE_URL}rawtransaction/sign`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -96,7 +98,7 @@ async function signContract(rawTx = "", privateKey = "") {
 
 async function sendTx(signedTx = "") {
     // POST http://localhost:8080/rawtransaction/send
-    const result = await fetch("http://localhost:8080/rawtransaction/send", {
+    const result = await fetch(`${BASE_URL}rawtransaction/send`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'
@@ -180,7 +182,7 @@ export async function callContract(fee = 0.0001, targetAddress = "", privateKey 
 // getContract(pure)
 export async function getContractMessage(targetAddress = "", args = [""]) {
     // POST http://localhost:8080/get/contractmessage
-    const result = await fetch("http://localhost:8080/get/contractmessage", {
+    const result = await fetch(`${BASE_URL}get/contractmessage`, {
         method: "POST",
         headers: {
             'Content-Type': 'application/json'

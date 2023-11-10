@@ -1,5 +1,6 @@
 import {List, Typography} from "antd";
 import React, {useEffect} from "react";
+import {BASE_URL} from "../utils/config.ts";
 
 
 function ScannerPanel() {
@@ -7,7 +8,7 @@ function ScannerPanel() {
 
     useEffect(() => {
         // GET http://localhost:8080/get/utxo
-        fetch("http://localhost:8080/get/utxo").then(res => res.json()).then(json => {
+        fetch(`${BASE_URL}get/utxo`).then(res => res.json()).then(json => {
             console.log(json)
             if (json.result !== "success") {
                 alert("error")
@@ -25,7 +26,11 @@ function ScannerPanel() {
                 footer={<div>end</div>}
                 bordered
                 dataSource={utxoList}
-                renderItem={(item: any) => (
+                renderItem={(item: {
+                    address: string,
+                    amount: number,
+                    txid: string,
+                }) => (
                     <List.Item>
                         <Typography.Text mark>[{`${item.txid}`}]</Typography.Text> {`${item.address} : ${item.amount}`}
                     </List.Item>
