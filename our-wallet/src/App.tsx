@@ -7,7 +7,6 @@ function App() {
         <UserContextProvider>
             <AppHeader/>
         </UserContextProvider>
-
     )
 }
 

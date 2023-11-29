@@ -120,6 +120,40 @@ describe('context user', () => {
         expect(spyAuthStateSubscribe).toBeCalledTimes(1)
     })
 
+    test('try login with no email', async () => {
+        const mockFunc = {
+            isEffectTrigger: false,
+            authStateSubscribe: () => {
+                mockFunc.isEffectTrigger = true
+            },
+        }
+        const MockWrapper = () => {
+            return (<UserContextProvider authStateSubscribe={(_, cb) => {
+                // base on use effect, is async call
+                mockFunc.authStateSubscribe()
+                assert(typeof cb === 'function')
+                const mockUser = {
+                    uid: 'mock-uid',
+                    displayName: 'John Doe',
+                    // 其他屬性...
+                };
+                if (cb) {
+                    cb({
+                        ...mockUser
+                    } as User)
+                }
+            }} signOutBeforeHook={async () => {
+            }}>
+                <MockApp></MockApp>
+            </UserContextProvider>)
+        }
+        const {instance} = await getWrapper(MockWrapper, mockFunc)
+
+        const h1 = instance.findByType('h1')
+        expect(h1).toBeDefined()
+        expect(h1.children).toEqual(['email: '])
+    })
+
     test('try context logout', async () => {
         const mockFunc = {
             isEffectTrigger: false,

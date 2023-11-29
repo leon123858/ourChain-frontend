@@ -48,3 +48,19 @@ exports[`context user > try context when not login 1`] = `
   </button>,
 ]
 `;
+
+exports[`context user > try login with no email 1`] = `
+[
+  <span>
+    isLogin
+  </span>,
+  <h1>
+    email: 
+  </h1>,
+  <button
+    onClick={[Function]}
+  >
+    logout
+  </button>,
+]
+`;
