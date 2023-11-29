@@ -1,6 +1,39 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`context user > try context 1`] = `
+exports[`context user > try context logout 1`] = `
+[
+  <span>
+    notLogin
+  </span>,
+  <h1>
+    email: 
+  </h1>,
+  <button
+    onClick={[Function]}
+  >
+    logout
+  </button>,
+]
+`;
+
+exports[`context user > try context when login 1`] = `
+[
+  <span>
+    isLogin
+  </span>,
+  <h1>
+    email: 
+    john@example.com
+  </h1>,
+  <button
+    onClick={[Function]}
+  >
+    logout
+  </button>,
+]
+`;
+
+exports[`context user > try context when not login 1`] = `
 [
   <span>
     notLogin

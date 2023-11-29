@@ -1,4 +1,4 @@
-import {createContext, ReactNode, useCallback, useEffect, useState} from 'react';
+import {createContext, ReactNode, useEffect, useState} from 'react';
 import {onAuthStateChanged, signOut} from "../userApiWrapper/firebaseAuth.ts";
 import app from '../firebase'
 import {Auth, getAuth, NextOrObserver, User} from "firebase/auth";
@@ -6,22 +6,19 @@ import {Auth, getAuth, NextOrObserver, User} from "firebase/auth";
 const UserContext = createContext({
     isLogin: false,
     email: '',
-    handleLogout: async () => {
-    }
+    handleLogout: () => Promise.resolve(),
 });
 
 function UserContextProvider({children, authStateSubscribe = onAuthStateChanged, signOutBeforeHook = signOut}: {
     children: ReactNode,
     authStateSubscribe?: (auth: Auth | undefined, callback: NextOrObserver<User | null>) => void,
-    signOutBeforeHook?:  (auth?: Auth) => Promise<void>,
+    signOutBeforeHook?: (auth?: Auth) => Promise<void>,
 }) {
     const [isLogin, setLogin] = useState(false);
     const [email, setEmail] = useState('');
 
-    const memoizedAuthStateSubscribe = useCallback(authStateSubscribe, [authStateSubscribe]);
-
     useEffect(() => {
-        memoizedAuthStateSubscribe(getAuth(app), (user) => {
+        authStateSubscribe(getAuth(app), (user) => {
             if (user) {
                 setLogin(true);
                 setEmail(user.email || "");
@@ -29,7 +26,7 @@ function UserContextProvider({children, authStateSubscribe = onAuthStateChanged,
                 setLogin(false);
             }
         })
-    }, [memoizedAuthStateSubscribe]);
+    }, []);
 
     const handleLogout = async () => {
         // firebase logout
