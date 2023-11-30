@@ -3,10 +3,10 @@ import {AiOutlineBars} from "react-icons/ai";
 import {Flex} from 'antd';
 import {Context, useContext} from "react";
 import {UserContext} from "../utils/context/user.tsx";
-import {signInWithGoogle} from "../utils/userApiWrapper/firebaseAuth.ts";
+import {signIn} from "../utils/userApiWrapper/firebaseAuth.ts";
 
 
-const AppHeader = ({handleSignIn = signInWithGoogle, context = UserContext}: {
+const AppHeader = ({handleSignIn = signIn, context = UserContext}: {
     handleSignIn?: () => Promise<void>,
     context?: Context<{ isLogin: boolean, email: string, handleLogout: () => Promise<void> }>
 }) => {

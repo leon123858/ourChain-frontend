@@ -1,5 +1,11 @@
 import {describe, expect, test, vi} from 'vitest'
-import {getCurrentUser, onAuthStateChanged, signInWithGoogle, signOut} from "./firebaseAuth.ts";
+import {
+    getCurrentUser,
+    onAuthStateChanged,
+    signInProviderFactory,
+    signIn,
+    signOut
+} from "./firebaseAuth.ts";
 
 
 describe('firebaseAuth', () => {
@@ -25,9 +31,9 @@ describe('firebaseAuth', () => {
     }
     test('should login', async () => {
         const spy = vi.spyOn(MockAuth, 'signInWithGoogle')
-        await signInWithGoogle(MockAuth as any, MockAuth.signInWithGoogle as any)
+        await signIn(MockAuth as any, MockAuth.signInWithGoogle as any)
         expect(spy).toHaveBeenCalled()
-        await expect(signInWithGoogle(MockAuth as any, MockAuth.signInWithGoogleError as any)).rejects.toThrow('error')
+        await expect(signIn(MockAuth as any, MockAuth.signInWithGoogleError as any)).rejects.toThrow('error')
     })
 
     test('should logout', async () => {
@@ -49,5 +55,24 @@ describe('firebaseAuth', () => {
         onAuthStateChanged(MockAuth as any, mockFunc)
         expect(spy).toHaveBeenCalled()
         expect(mockFunc).toHaveBeenCalled()
+    })
+
+    test('should use each provider', async () => {
+        const spy = vi.spyOn(MockAuth, 'signInWithGoogle')
+        const provider = signInProviderFactory('GOOGLE')
+        await signIn(MockAuth as any, MockAuth.signInWithGoogle as any, provider)
+        expect(spy).toHaveBeenCalled()
+        try {
+            signInProviderFactory('ANONYMOUS')
+            // throw new Error('do not throw')
+        } catch (e: any) {
+            expect(e.message).toBe('not implement')
+        }
+        try {
+            signInProviderFactory('WRONG' as any)
+            // throw new Error('do not throw')
+        } catch (e: any) {
+            expect(e.message).toBe('wrong type')
+        }
     })
 })

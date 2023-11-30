@@ -1,10 +1,20 @@
 import app from '../firebase'
 import {getAuth, GoogleAuthProvider, NextOrObserver, signInWithPopup, User} from "firebase/auth";
 
-const googleAuthProvider = new GoogleAuthProvider();
+type PROVIDER_TYPE = 'GOOGLE' | 'ANONYMOUS' ;
+export const signInProviderFactory = (type: PROVIDER_TYPE) => {
+    switch (type) {
+        case 'GOOGLE':
+            return new GoogleAuthProvider();
+        case 'ANONYMOUS':
+            throw new Error('not implement')
+        default:
+            throw new Error('wrong type')
+    }
+}
 
-export const signInWithGoogle = async (auth = getAuth(app), method = signInWithPopup) => {
-    await method(auth, googleAuthProvider)
+export const signIn = async (auth = getAuth(app), method = signInWithPopup, provider = signInProviderFactory('GOOGLE')) => {
+    await method(auth, provider)
         .then((result) => {
             console.log(result.user)
         }).catch((error) => {
