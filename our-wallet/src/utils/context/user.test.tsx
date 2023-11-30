@@ -1,3 +1,7 @@
+/**
+ * @vitest-environment jsdom
+ */
+
 import renderer, {act} from 'react-test-renderer'
 import {assert, describe, expect, test, vi} from "vitest";
 import {UserContext, UserContextProvider} from "./user.tsx";

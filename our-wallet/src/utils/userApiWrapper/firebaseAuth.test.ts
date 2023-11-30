@@ -1,11 +1,9 @@
+/**
+ * @vitest-environment jsdom
+ */
+
 import {describe, expect, test, vi} from 'vitest'
-import {
-    getCurrentUser,
-    onAuthStateChanged,
-    signInProviderFactory,
-    signIn,
-    signOut
-} from "./firebaseAuth.ts";
+import {getCurrentUser, onAuthStateChanged, signIn, signInProviderFactory, signOut} from "./firebaseAuth.ts";
 
 
 describe('firebaseAuth', () => {

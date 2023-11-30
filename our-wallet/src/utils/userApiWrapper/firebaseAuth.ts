@@ -1,7 +1,7 @@
 import app from '../firebase'
 import {getAuth, GoogleAuthProvider, NextOrObserver, signInWithPopup, User} from "firebase/auth";
 
-type PROVIDER_TYPE = 'GOOGLE' | 'ANONYMOUS' ;
+type PROVIDER_TYPE = 'GOOGLE' | 'ANONYMOUS';
 export const signInProviderFactory = (type: PROVIDER_TYPE) => {
     switch (type) {
         case 'GOOGLE':

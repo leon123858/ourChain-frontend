@@ -1,3 +1,7 @@
+/**
+ * @vitest-environment jsdom
+ */
+
 import renderer from 'react-test-renderer'
 import {describe, expect, test} from "vitest";
 import Header from "./Header.tsx";
@@ -59,7 +63,7 @@ describe('Header', () => {
             }}>
                 <Header handleSignIn={async () => {
                 }} context={MockUserContext}></Header>
-            </MockUserContext.Provider>,
+            </MockUserContext.Provider>
         )
         const tree = component.toJSON()
         expect(tree).toMatchSnapshot()
@@ -69,11 +73,6 @@ describe('Header', () => {
         expect(instance).toBeDefined()
 
         const btn = instance.findByProps({className: 'logoutBtn'})
-        expect(btn?.children[0]).toBe('Logout ')
-        expect(btn?.children[1]).toBe("test@sample.com")
-        for (let i = 0; i < 10; i++) {
-            btn.props.onClick()
-            expect(spyTriggerTime).toBe(i + 1)
-        }
+        expect(btn?.children[0]).toBe('test@sample.com')
     })
 })

@@ -1,16 +1,18 @@
 import {FaBeer} from "react-icons/fa";
 import {AiOutlineBars} from "react-icons/ai";
-import {Flex} from 'antd';
-import {Context, useContext} from "react";
+import {Drawer, Flex, Menu} from 'antd';
+import {Context, useContext, useState, JSX} from "react";
 import {UserContext} from "../utils/context/user.tsx";
 import {signIn} from "../utils/userApiWrapper/firebaseAuth.ts";
 
 
-const AppHeader = ({handleSignIn = signIn, context = UserContext}: {
+const AppHeader = ({handleSignIn = signIn, context = UserContext, menu = <Menu />}: {
     handleSignIn?: () => Promise<void>,
-    context?: Context<{ isLogin: boolean, email: string, handleLogout: () => Promise<void> }>
+    context?: Context<{ isLogin: boolean, email: string, handleLogout: () => Promise<void> }>,
+    menu?: JSX.Element
 }) => {
-    const {isLogin, handleLogout, email} = useContext(context);
+    const {isLogin, email} = useContext(context);
+    const [visible, setVisible] = useState(false);
 
     return (
         <div style={{width: "100vw", backgroundColor: "black", height: "8vh"}}>
@@ -23,21 +25,27 @@ const AppHeader = ({handleSignIn = signIn, context = UserContext}: {
             }}>
                 <FaBeer/>
                 {isLogin ?
-                    <button className={"logoutBtn"}
+                    <span className={"logoutBtn"}
                             style={{color: "whitesmoke", maxWidth: "30vw", overflow: "hidden", whiteSpace: "nowrap"}}
-                            onClick={async () => {
-                                await handleLogout();
-                            }}>
-                        Logout {email}
-                    </button> : <button className={"loginBtn"} style={{color: "white"}} onClick={async () => {
+                            >
+                        {email}
+                    </span> : <button className={"loginBtn"} style={{color: "white"}} onClick={async () => {
                         await handleSignIn();
                     }}>
                         Login
                     </button>}
-                <button>
+                <button onClick={()=> {setVisible(true)}}>
                     <AiOutlineBars/>
                 </button>
             </Flex>
+            <Drawer
+                title="Menu"
+                placement="right"
+                open={visible}
+                onClose={() => {setVisible(false)}}
+            >
+                {menu}
+            </Drawer>
         </div>
     );
 };
