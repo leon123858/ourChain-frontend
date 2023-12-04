@@ -1,41 +1,42 @@
 {
-  "name": "our-wallet",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview",
-    "test": "vitest --environment=jsdom",
-    "coverage": "vitest run --coverage --environment=jsdom"
-  },
-  "dependencies": {
-    "@react-buddy/ide-toolbox": "^2.4.0",
-    "@react-buddy/palette-antd": "^5.3.0",
-    "antd": "^5.11.5",
-    "firebase": "^10.7.0",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-icons": "^4.12.0"
-  },
-  "devDependencies": {
-    "@testing-library/react-hooks": "^8.0.1",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
-    "@types/react-test-renderer": "^18.0.7",
-    "@typescript-eslint/eslint-plugin": "^6.10.0",
-    "@typescript-eslint/parser": "^6.10.0",
-    "@vitejs/plugin-react": "^4.2.0",
-    "@vitest/coverage-v8": "^0.34.6",
-    "eslint": "^8.53.0",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.4",
-    "jsdom": "^23.0.1",
-    "react-test-renderer": "^18.2.0",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
-    "vitest": "^0.34.6"
-  }
+	"name": "our-wallet",
+	"private": true,
+	"version": "0.0.0",
+	"type": "module",
+	"scripts": {
+		"dev": "vite",
+		"build": "tsc && vite build",
+		"lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+		"preview": "vite preview",
+		"test": "vitest --environment=jsdom",
+		"coverage": "vitest run --coverage --environment=jsdom",
+		"deploy": "firebase deploy --only hosting:ourchain-wallet --project dd-coin"
+	},
+	"dependencies": {
+		"@react-buddy/ide-toolbox": "^2.4.0",
+		"@react-buddy/palette-antd": "^5.3.0",
+		"antd": "^5.11.5",
+		"firebase": "^10.7.0",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
+		"react-icons": "^4.12.0"
+	},
+	"devDependencies": {
+		"@testing-library/react-hooks": "^8.0.1",
+		"@types/react": "^18.2.37",
+		"@types/react-dom": "^18.2.15",
+		"@types/react-test-renderer": "^18.0.7",
+		"@typescript-eslint/eslint-plugin": "^6.10.0",
+		"@typescript-eslint/parser": "^6.10.0",
+		"@vitejs/plugin-react": "^4.2.0",
+		"@vitest/coverage-v8": "^0.34.6",
+		"eslint": "^8.53.0",
+		"eslint-plugin-react-hooks": "^4.6.0",
+		"eslint-plugin-react-refresh": "^0.4.4",
+		"jsdom": "^23.0.1",
+		"react-test-renderer": "^18.2.0",
+		"typescript": "^5.2.2",
+		"vite": "^5.0.0",
+		"vitest": "^0.34.6"
+	}
 }

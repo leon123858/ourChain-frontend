@@ -1,0 +1,6 @@
+{
+	"hosting": {
+		"site": "ourchain-wallet",
+		"public": "dist"
+	}
+}
