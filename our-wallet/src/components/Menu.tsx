@@ -1,15 +1,15 @@
-import { Menu } from "antd";
-import {AiOutlineLogout, AiOutlineSetting} from "react-icons/ai";
+import {Menu} from "antd";
+import {AiFillBook, AiOutlineLogout, AiOutlineSetting} from "react-icons/ai";
 import {Context, useContext, useEffect, useState} from "react";
 import {UserContext} from "../utils/context/user.tsx";
 
-const renderProfilePanel = ({name,id,email}:{
-    name:string,
-    id:string,
-    email:string
+const renderProfilePanel = ({name, id, email}: {
+    name: string,
+    id: string,
+    email: string
 }) => {
     return (
-        <div style={{color:"black"}}>
+        <div style={{color: "black"}}>
             <h2>個人資訊</h2>
             <p>姓名： {name}</p>
             <p className={"uid"}>ID：{id}</p>
@@ -18,7 +18,7 @@ const renderProfilePanel = ({name,id,email}:{
     );
 };
 
-const AppMenu = ({getUserInfo, userContext = UserContext}: {getUserInfo: ()=> any, userContext?: Context<any>}) => {
+const AppMenu = ({getUserInfo, userContext = UserContext}: { getUserInfo: () => any, userContext?: Context<any> }) => {
     const {isLogin, handleLogout} = useContext(userContext);
     const [userInfo, setUserInfo] = useState({
         name: "",
@@ -26,10 +26,10 @@ const AppMenu = ({getUserInfo, userContext = UserContext}: {getUserInfo: ()=> an
         email: ""
     })
 
-    useEffect(()=>{
-        if(isLogin) {
+    useEffect(() => {
+        if (isLogin) {
             const user = getUserInfo();
-            if(user) {
+            if (user) {
                 setUserInfo({
                     name: user.displayName || "",
                     id: user.uid,
@@ -37,28 +37,36 @@ const AppMenu = ({getUserInfo, userContext = UserContext}: {getUserInfo: ()=> an
                 })
             }
         }
-    },[isLogin])
+    }, [isLogin])
 
     return (
         <div>
-            {isLogin && renderProfilePanel(userInfo)}
-            <Menu defaultSelectedKeys={['1']} mode="inline" items={
+            {isLogin ? renderProfilePanel(userInfo) : <p style={{color: "black"}}>please login first</p>}
+            {isLogin ? <Menu defaultSelectedKeys={['1']} mode="inline" items={
                 [
                     {
                         key: "1",
-                        icon: <AiOutlineSetting />,
+                        icon: <AiOutlineSetting/>,
                         label: "設置"
                     },
                     {
                         key: "2",
-                        icon: <AiOutlineLogout />,
+                        icon: <AiOutlineLogout/>,
                         label: "登出",
                         className: "logoutBtn",
                         onClick: handleLogout
                     }
                 ]
-            }>
-            </Menu>
+            } />:
+            <Menu defaultSelectedKeys={['1']} mode="inline" items={
+                [
+                    {
+                        key: "1",
+                        icon: <AiFillBook/>,
+                        label: "註冊"
+                    }
+                ]
+            } />}
         </div>
     );
 }

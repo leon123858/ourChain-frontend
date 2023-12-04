@@ -40,7 +40,7 @@ describe('Menu', () => {
         expect(instance).toBeDefined()
     })
 
-    test('try render login',async () => {
+    test('try render login', async () => {
         const mockGetUserInfo = vi.fn()
         const contextValue = {
             isLogin: true,
@@ -68,7 +68,7 @@ describe('Menu', () => {
         expect(instance).toBeDefined()
     })
 
-    test('try render login with user info and logout',async () => {
+    test('try render login with user info and logout', async () => {
         const mockLogout = vi.fn()
         const mockGetUserInfoInner = vi.fn()
         const mockGetUserInfo = () => {

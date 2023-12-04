@@ -1,12 +1,12 @@
 import {FaBeer} from "react-icons/fa";
 import {AiOutlineBars} from "react-icons/ai";
 import {Drawer, Flex, Menu} from 'antd';
-import {Context, useContext, useState, JSX} from "react";
+import {Context, JSX, useContext, useState} from "react";
 import {UserContext} from "../utils/context/user.tsx";
 import {signIn} from "../utils/userApiWrapper/firebaseAuth.ts";
 
 
-const AppHeader = ({handleSignIn = signIn, context = UserContext, menu = <Menu />}: {
+const AppHeader = ({handleSignIn = signIn, context = UserContext, menu = <Menu/>}: {
     handleSignIn?: () => Promise<void>,
     context?: Context<{ isLogin: boolean, email: string, handleLogout: () => Promise<void> }>,
     menu?: JSX.Element
@@ -26,15 +26,17 @@ const AppHeader = ({handleSignIn = signIn, context = UserContext, menu = <Menu /
                 <FaBeer/>
                 {isLogin ?
                     <span className={"logoutBtn"}
-                            style={{color: "whitesmoke", maxWidth: "30vw", overflow: "hidden", whiteSpace: "nowrap"}}
-                            >
+                          style={{color: "whitesmoke", maxWidth: "30vw", overflow: "hidden", whiteSpace: "nowrap"}}
+                    >
                         {email}
                     </span> : <button className={"loginBtn"} style={{color: "white"}} onClick={async () => {
                         await handleSignIn();
                     }}>
                         Login
                     </button>}
-                <button onClick={()=> {setVisible(true)}}>
+                <button onClick={() => {
+                    setVisible(true)
+                }}>
                     <AiOutlineBars/>
                 </button>
             </Flex>
@@ -42,7 +44,9 @@ const AppHeader = ({handleSignIn = signIn, context = UserContext, menu = <Menu /
                 title="Menu"
                 placement="right"
                 open={visible}
-                onClose={() => {setVisible(false)}}
+                onClose={() => {
+                    setVisible(false)
+                }}
             >
                 {menu}
             </Drawer>
