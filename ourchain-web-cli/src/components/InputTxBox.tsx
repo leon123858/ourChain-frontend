@@ -1,4 +1,4 @@
-import {Button, Input, Select, Typography} from "antd";
+import {Button, Input, message, Select, Typography} from "antd";
 import React from "react";
 import InputContractExtend from "./InputContractExtend.tsx";
 import {callContract, deployContract, sendMoney} from "../utils/txApiWrapper.ts";
@@ -9,8 +9,9 @@ enum TxMode {
     ContractExecute = "執行合約",
 }
 
-function InputTxBox({privateKey}:
+function InputTxBox({privateKey, ownerAddress}:
                         {
+                            ownerAddress: string,
                             privateKey: string
                         }) {
     const [mode, setMode] = React.useState('非合約')
@@ -48,20 +49,26 @@ function InputTxBox({privateKey}:
             {mode !== TxMode.Normal ? <InputContractExtend contractArguments={contractArguments}
                                                            setContractArguments={setContractArguments}/> : null}
             <Button onClick={async () => {
-                switch (mode) {
-                    case TxMode.Normal:
-                        alert(await sendMoney(0.001, address, privateKey))
-                        break
-                    case TxMode.ContractDeploy: {
-                        const result = await deployContract(0.001, "", privateKey, srcCode, contractArguments)
-                        alert(result.txid)
-                        alert("address: " + result.contractAddress)
-                        break
+                try {
+                    switch (mode) {
+                        case TxMode.Normal:
+                            alert(await sendMoney(0.001, address, privateKey, ownerAddress))
+                            break
+                        case TxMode.ContractDeploy: {
+                            const result = await deployContract(0.001, "", privateKey, ownerAddress,srcCode, contractArguments)
+                            alert(result.txid)
+                            alert("address: " + result.contractAddress)
+                            break
+                        }
+                        case TxMode.ContractExecute:
+                            alert(await callContract(0.001, address, privateKey, ownerAddress, "", contractArguments))
+                            break
                     }
-                    case TxMode.ContractExecute:
-                        alert(await callContract(0.001, address, privateKey, "", contractArguments))
-                        break
+                }catch (e) {
+                    console.error(e)
+                    message.error("區塊鏈交易失敗, 請多嘗試幾次")
                 }
+
             }}>送出</Button>
         </div>
     </>

@@ -1,8 +1,8 @@
 import {BASE_URL} from "./config.ts";
 
-async function getUtxo(fee = 0.0001, targetAddress = "") {
+async function getUtxo(fee = 0.0001, targetAddress = "", ownerAddress = "") {
     // GET http://localhost:8080/get/utxo
-    const utxoResult = await fetch(`${BASE_URL}get/utxo`, {method: "GET"});
+    const utxoResult = await fetch(`${BASE_URL}get/utxo?address=${ownerAddress}`, {method: "GET"});
     const utxoJson = await utxoResult.json();
     if (utxoJson.result !== "success") {
         console.error("Error: ", utxoJson);
@@ -34,13 +34,13 @@ async function getUtxo(fee = 0.0001, targetAddress = "") {
     }
 }
 
-async function createTx(fee = 0.0001, targetAddress = "", contract: {
+async function createTx(fee = 0.0001, targetAddress = "", ownerAddress = "", contract: {
     action: number,
     code: string,
     address: string,
     args: string[]
 }) {
-    const utxo = await getUtxo(fee, targetAddress);
+    const utxo = await getUtxo(fee, targetAddress, ownerAddress);
     if (!utxo) {
         console.error("Error: no utxo available");
         return;
@@ -116,8 +116,8 @@ async function sendTx(signedTx = "") {
 }
 
 // sendMoney
-export async function sendMoney(fee = 0.0001, targetAddress = "", privateKey = "") {
-    const rawTx = await createTx(fee, targetAddress, {action: 0, code: "", address: "", args: []});
+export async function sendMoney(fee = 0.0001, targetAddress = "", privateKey = "", ownerAddress = "") {
+    const rawTx = await createTx(fee, targetAddress, ownerAddress, {action: 0, code: "", address: "", args: []});
     if (!rawTx) {
         throw new Error("Error: no rawTx available");
     }
@@ -133,8 +133,8 @@ export async function sendMoney(fee = 0.0001, targetAddress = "", privateKey = "
 }
 
 // deployContract
-export async function deployContract(fee = 0.0001, targetAddress = "", privateKey = "", code = "", args = [""]) {
-    const rawTx = await createTx(fee, "", {
+export async function deployContract(fee = 0.0001, targetAddress = "", privateKey = "", ownerAddress:string, code = "", args = [""]) {
+    const rawTx = await createTx(fee, "", ownerAddress,{
         action: 1,
         code: code,
         address: targetAddress,
@@ -158,8 +158,8 @@ export async function deployContract(fee = 0.0001, targetAddress = "", privateKe
 }
 
 // callContract
-export async function callContract(fee = 0.0001, targetAddress = "", privateKey = "", code = "", args = [""]) {
-    const rawTx = await createTx(fee, "", {
+export async function callContract(fee = 0.0001, targetAddress = "", privateKey = "",ownerAddress:string, code = "", args = [""]) {
+    const rawTx = await createTx(fee, "", ownerAddress,{
         action: 2,
         code: code,
         address: targetAddress,
