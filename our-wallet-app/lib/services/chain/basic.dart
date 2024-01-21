@@ -1,11 +1,31 @@
 import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:our_wallet_app/utils/config.dart';
 
 /// Basic Methods
-Future<Map<String, dynamic>?> getUtxo({double fee = 0.0001, String targetAddress = "", String ownerAddress = ""}) async {
-  final utxoResult = await http.get(Uri.parse('${baseUrl}get/utxo?address=$ownerAddress'));
+Future<List<dynamic>?> getUtxoList({required String address, double fee = 0.0001}) async{
+  final utxoResult =
+      await http.get(Uri.parse('${baseUrl}get/utxo?address=$address'));
+  final utxoJson = json.decode(utxoResult.body);
+  if (utxoJson['result'] != "success") {
+    if (kDebugMode) {
+      print('Error: $utxoJson');
+    }
+    return null;
+  }
+  final List<dynamic> utxoList = utxoJson['data'];
+  return utxoList;
+}
+
+/// Basic Methods
+Future<Map<String, dynamic>?> getUtxo(
+    {double fee = 0.0001,
+    String targetAddress = "",
+    String ownerAddress = ""}) async {
+  final utxoResult =
+      await http.get(Uri.parse('${baseUrl}get/utxo?address=$ownerAddress'));
   final utxoJson = json.decode(utxoResult.body);
   if (utxoJson['result'] != "success") {
     if (kDebugMode) {
@@ -34,14 +54,21 @@ Future<Map<String, dynamic>?> getUtxo({double fee = 0.0001, String targetAddress
       'vout': targetUtxo['vout'],
     },
     'output': {
-      'address': targetAddress.isNotEmpty ? targetAddress : targetUtxo['address'],
+      'address':
+          targetAddress.isNotEmpty ? targetAddress : targetUtxo['address'],
       'amount': targetUtxo['amount'] - fee,
     }
   };
 }
+
 /// Basic Methods
-Future<Map<String, dynamic>?> createTx({double fee = 0.0001, String targetAddress = "", String ownerAddress = "", required Map<String, dynamic> contract}) async {
-  final utxo = await getUtxo(fee: fee, targetAddress: targetAddress, ownerAddress: ownerAddress);
+Future<Map<String, dynamic>?> createTx(
+    {double fee = 0.0001,
+    String targetAddress = "",
+    String ownerAddress = "",
+    required Map<String, dynamic> contract}) async {
+  final utxo = await getUtxo(
+      fee: fee, targetAddress: targetAddress, ownerAddress: ownerAddress);
   if (utxo == null) {
     if (kDebugMode) {
       print('Error: no utxo available');
@@ -74,8 +101,10 @@ Future<Map<String, dynamic>?> createTx({double fee = 0.0001, String targetAddres
     'contractAddress': jsonObj['data']['contractAddress'] as String,
   };
 }
+
 /// Basic Methods
-Future<String?> signContract({String rawTx = "", String privateKey = ""}) async {
+Future<String?> signContract(
+    {String rawTx = "", String privateKey = ""}) async {
   final result = await http.post(
     Uri.parse('${baseUrl}rawtransaction/sign'),
     headers: {'Content-Type': 'application/json'},
@@ -99,6 +128,7 @@ Future<String?> signContract({String rawTx = "", String privateKey = ""}) async 
   }
   return jsonObj['data']['hex'] as String;
 }
+
 /// Basic Methods
 Future<String?> sendTx({String signedTx = ""}) async {
   final result = await http.post(

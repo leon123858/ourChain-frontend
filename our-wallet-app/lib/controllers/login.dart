@@ -4,6 +4,7 @@ import 'package:our_wallet_app/controllers/register.dart';
 import 'package:our_wallet_app/services/aid/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
 import '../services/wallet/wrapper.dart';
 import '../widgets/userProvider.dart';
 
@@ -32,11 +33,12 @@ class _LoginState extends State<Login> {
       return;
     }
     BuildContext currentContext = context;
-    login(nameController.text, passwordController.text,wallet).then((result) {
-      if (result) {
+    login(nameController.text, passwordController.text, wallet).then((result) {
+      if (result != null) {
         // save to provider
         Provider.of<UserStateProvider>(currentContext, listen: false)
             .login(nameController.text, passwordController.text);
+        Provider.of<UserStateProvider>(currentContext, listen: false).setAidMetaData("aid", result);
         // Navigate replace current page with home page
         Navigator.pushReplacement(
           currentContext,

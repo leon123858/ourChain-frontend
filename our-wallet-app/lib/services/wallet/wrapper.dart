@@ -1,3 +1,4 @@
+import 'package:our_wallet_app/services/chain/basic.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Wallet {
@@ -7,8 +8,23 @@ class Wallet {
   String getAddress() {
     return address;
   }
+
   String getPrivateKey() {
     return privateKey;
+  }
+
+  Future<double> getBalance() async {
+    var utxoList = await getUtxoList(address: address);
+    if(utxoList == null) {
+      return 0;
+    }
+    double balance = 0;
+    for (var utxo in utxoList) {
+      if(utxo['confirmations'] > 100){
+        balance += utxo['amount'];
+      }
+    }
+    return balance;
   }
 
   saveWalletString() async {
