@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:our_wallet_app/services/chain/contract.dart';
+import 'package:our_wallet_app/services/aid/wrapper.dart';
+import 'package:provider/provider.dart';
+
+import '../widgets/userProvider.dart';
 
 class Register extends StatefulWidget {
   const Register({super.key, required this.title});
@@ -66,24 +69,39 @@ class _RegisterState extends State<Register> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        var name = nameController.text;
-                        var password = passwordController.text;
-                        callContract(
-                                targetAddress: "cbdce22b0a836221a1aababf11aab5892c27cb18adb97165b0b6d0b63d826c00",
-                                privateKey: "cP8AsSiaJRFBCC8enLezw2JVEvJefMzdnS2n8qbCHUcyhdDtgvot",
-                                ownerAddress: "muq9pzJFRCNkzSS8PN5LiCVaXwQe4H98SQ",
-                                args: ["registerNewUser", name, password]
-                        ).then((value) {
+                        // get provider wallet
+                        var wallet = Provider.of<UserStateProvider>(context,
+                                listen: false)
+                            .getWallet;
+                        if (wallet == null) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('registerNewUser Send!')),
+                            const SnackBar(
+                                content: Text('Please create wallet')),
+                          );
+                          return;
+                        }
+                        register(nameController.text, passwordController.text,
+                                wallet)
+                            .then((value) {
+                          if (!value) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('registerNewUser Send Error!')),
+                            );
+                            return;
+                          }
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('registerNewUser Send!')),
                           );
                           Navigator.pop(context);
+                          return;
                         });
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill input')),
-                        );
+                        return;
                       }
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Please fill input')),
+                      );
                     },
                     child: const Text('Submit'),
                   ),

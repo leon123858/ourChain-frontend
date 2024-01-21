@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:our_wallet_app/controllers/home.dart';
 import 'package:our_wallet_app/controllers/register.dart';
+import 'package:our_wallet_app/services/aid/wrapper.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../services/chain/contract.dart';
+import '../services/wallet/wrapper.dart';
 import '../widgets/userProvider.dart';
 
 class Login extends StatefulWidget {
@@ -22,32 +21,19 @@ class _LoginState extends State<Login> {
   TextEditingController nameController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
-  _tryLoginAID(String name, String password) async {
-    String? result = await getContractMessage(
-      targetAddress: "cbdce22b0a836221a1aababf11aab5892c27cb18adb97165b0b6d0b63d826c00",
-      args: ["login", name, password],
-    );
-    if (result == null) {
-      return false;
-    }
-    // convert result to json
-    var resultJson = jsonDecode(result);
-    // check if result is success
-    if (resultJson['isExist'] == true) {
-      return true;
-    }
-    return false;
-  }
-
   _loginProcess() {
+    // get current wallet
+    Wallet? wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please create wallet first')),
+      );
+      return;
+    }
     BuildContext currentContext = context;
-    _tryLoginAID(nameController.text, passwordController.text).then((result) {
+    login(nameController.text, passwordController.text,wallet).then((result) {
       if (result) {
-        // save to shared preferences
-        SharedPreferences.getInstance().then((prefs) {
-          prefs.setString('username', nameController.text);
-          prefs.setString('password', passwordController.text);
-        });
         // save to provider
         Provider.of<UserStateProvider>(currentContext, listen: false)
             .login(nameController.text, passwordController.text);
