@@ -38,7 +38,8 @@ class _LoginState extends State<Login> {
         // save to provider
         Provider.of<UserStateProvider>(currentContext, listen: false)
             .login(nameController.text, passwordController.text);
-        Provider.of<UserStateProvider>(currentContext, listen: false).setAidMetaData("aid", result);
+        Provider.of<UserStateProvider>(currentContext, listen: false)
+            .setAidMetaData("aid", result);
         // Navigate replace current page with home page
         Navigator.pushReplacement(
           currentContext,

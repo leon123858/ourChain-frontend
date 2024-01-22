@@ -5,7 +5,8 @@ import 'package:http/http.dart' as http;
 import 'package:our_wallet_app/utils/config.dart';
 
 /// Basic Methods
-Future<List<dynamic>?> getUtxoList({required String address, double fee = 0.0001}) async{
+Future<List<dynamic>?> getUtxoList(
+    {required String address, double fee = 0.0001}) async {
   final utxoResult =
       await http.get(Uri.parse('${baseUrl}get/utxo?address=$address'));
   final utxoJson = json.decode(utxoResult.body);

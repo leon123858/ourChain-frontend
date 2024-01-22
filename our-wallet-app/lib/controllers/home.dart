@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:our_wallet_app/controllers/newNFT.dart';
 import 'package:our_wallet_app/widgets/ourCoins.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/customCoins.dart';
 import '../widgets/userProvider.dart';
 import 'login.dart';
 
@@ -19,7 +21,8 @@ class HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     _userName = Provider.of<UserStateProvider>(context, listen: true).getName;
-    _aid = Provider.of<UserStateProvider>(context, listen: true).getAidMetaData("aid");
+    _aid = Provider.of<UserStateProvider>(context, listen: true)
+        .getAidMetaData("aid");
     return Scaffold(
       appBar: AppBar(
         title: const Text('Our Wallet'),
@@ -31,7 +34,10 @@ class HomePageState extends State<HomePage> {
           ),
           const Center(
             child: OurCoins(),
-          )
+          ),
+          const Center(
+            child: CustomCoins(),
+          ),
         ],
       ),
       drawer: Drawer(
@@ -65,6 +71,17 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            ListTile(
+                title: const Text('generate coin (orc20)'),
+                onTap: () {
+                  // goto add coin page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const NewNFT(),
+                    ),
+                  );
+                }),
             ListTile(
               title: const Text('Logout'),
               onTap: () {

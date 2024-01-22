@@ -15,12 +15,12 @@ class Wallet {
 
   Future<double> getBalance() async {
     var utxoList = await getUtxoList(address: address);
-    if(utxoList == null) {
+    if (utxoList == null) {
       return 0;
     }
     double balance = 0;
     for (var utxo in utxoList) {
-      if(utxo['confirmations'] > 100){
+      if (utxo['confirmations'] > 100) {
         balance += utxo['amount'];
       }
     }

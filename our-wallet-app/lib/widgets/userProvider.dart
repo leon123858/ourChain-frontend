@@ -8,7 +8,7 @@ class UserStateProvider extends ChangeNotifier {
   String password = '';
   Wallet? wallet;
 
-  var aidMetaDataMap = <String,String>{};
+  var aidMetaDataMap = <String, String>{};
 
   String getAidMetaData(String key) {
     return aidMetaDataMap[key] ?? '';
@@ -51,8 +51,8 @@ class UserStateProvider extends ChangeNotifier {
     name = '';
     password = '';
     isLogin = false;
-    wallet = null;
-    aidMetaDataMap = <String,String>{};
+    // wallet = null;
+    // aidMetaDataMap = <String,String>{};
     notifyListeners();
   }
 }
