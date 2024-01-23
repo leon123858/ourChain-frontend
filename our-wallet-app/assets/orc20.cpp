@@ -44,7 +44,7 @@ enum Command
 };
 
 static std::unordered_map<std::string, Command> const string2Command = {{"totalSupply", Command::totalSupply}, {"balanceOf", Command::balanceOf}, {"transfer", Command::transfer}, {"allowance", Command::allowance}, {"approve", Command::approve}, {"transferFrom", Command::transferFrom}};
-static std::string aidContractAddress = "f333215f062614ed726b067acddee3c0c67b00fce7abbae2e4c03d34a26902fc";
+static std::string aidContractAddress = "<AID_ADDRESS>";
 
 char *getDynamicString(const char *str)
 {

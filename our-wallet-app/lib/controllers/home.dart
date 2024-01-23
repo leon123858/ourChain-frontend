@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:our_wallet_app/controllers/newNFT.dart';
 import 'package:our_wallet_app/widgets/ourCoins.dart';
 import 'package:provider/provider.dart';
@@ -62,12 +63,31 @@ class HomePageState extends State<HomePage> {
                       color: Colors.black,
                     ),
                   ),
-                  Text(
-                    "AID:\n$_aid",
-                    style: const TextStyle(
-                      color: Colors.white70,
-                    ),
-                  ),
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Expanded(
+                        child: Text(
+                          "AID: $_aid",
+                          style: const TextStyle(
+                            color: Colors.white70,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                          onPressed: () {
+                            // copy aid to clipboard
+                            Clipboard.setData(ClipboardData(text: _aid));
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('aid is copied to clipboard'),
+                              ),
+                            );
+                          },
+                          icon: const Icon(Icons.copy))
+                    ],
+                  )
                 ],
               ),
             ),

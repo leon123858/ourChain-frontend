@@ -2,13 +2,14 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:our_wallet_app/utils/config.dart';
 
 /// Basic Methods
 Future<List<dynamic>?> getUtxoList(
-    {required String address, double fee = 0.0001}) async {
+    {required String address,
+    double fee = 0.0001,
+    required String nodeUrl}) async {
   final utxoResult =
-      await http.get(Uri.parse('${baseUrl}get/utxo?address=$address'));
+      await http.get(Uri.parse('${nodeUrl}get/utxo?address=$address'));
   final utxoJson = json.decode(utxoResult.body);
   if (utxoJson['result'] != "success") {
     if (kDebugMode) {
@@ -24,9 +25,10 @@ Future<List<dynamic>?> getUtxoList(
 Future<Map<String, dynamic>?> getUtxo(
     {double fee = 0.0001,
     String targetAddress = "",
-    String ownerAddress = ""}) async {
+    String ownerAddress = "",
+    required String nodeUrl}) async {
   final utxoResult =
-      await http.get(Uri.parse('${baseUrl}get/utxo?address=$ownerAddress'));
+      await http.get(Uri.parse('${nodeUrl}get/utxo?address=$ownerAddress'));
   final utxoJson = json.decode(utxoResult.body);
   if (utxoJson['result'] != "success") {
     if (kDebugMode) {
@@ -67,9 +69,13 @@ Future<Map<String, dynamic>?> createTx(
     {double fee = 0.0001,
     String targetAddress = "",
     String ownerAddress = "",
-    required Map<String, dynamic> contract}) async {
+    required Map<String, dynamic> contract,
+    required String nodeUrl}) async {
   final utxo = await getUtxo(
-      fee: fee, targetAddress: targetAddress, ownerAddress: ownerAddress);
+      fee: fee,
+      targetAddress: targetAddress,
+      ownerAddress: ownerAddress,
+      nodeUrl: nodeUrl);
   if (utxo == null) {
     if (kDebugMode) {
       print('Error: no utxo available');
@@ -77,7 +83,7 @@ Future<Map<String, dynamic>?> createTx(
     return null;
   }
   final result = await http.post(
-    Uri.parse('${baseUrl}rawtransaction/create'),
+    Uri.parse('${nodeUrl}rawtransaction/create'),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'inputs': [utxo['input']],
@@ -105,9 +111,11 @@ Future<Map<String, dynamic>?> createTx(
 
 /// Basic Methods
 Future<String?> signContract(
-    {String rawTx = "", String privateKey = ""}) async {
+    {String rawTx = "",
+    String privateKey = "",
+    required String nodeUrl}) async {
   final result = await http.post(
-    Uri.parse('${baseUrl}rawtransaction/sign'),
+    Uri.parse('${nodeUrl}rawtransaction/sign'),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'rawTransaction': rawTx,
@@ -131,9 +139,9 @@ Future<String?> signContract(
 }
 
 /// Basic Methods
-Future<String?> sendTx({String signedTx = ""}) async {
+Future<String?> sendTx({String signedTx = "", required String nodeUrl}) async {
   final result = await http.post(
-    Uri.parse('${baseUrl}rawtransaction/send'),
+    Uri.parse('${nodeUrl}rawtransaction/send'),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'rawTransaction': signedTx,

@@ -60,8 +60,21 @@ class _CoinState extends State<Coin> {
                           );
                           return;
                         }
+                        // get wallet
+                        var wallet = Provider.of<UserStateProvider>(context,
+                                listen: false)
+                            .getWallet;
+                        if (wallet == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('wallet is empty'),
+                            ),
+                          );
+                          return;
+                        }
                         // add coin
-                        final result = addCoin(aid, addressController.text);
+                        final result =
+                            addCoin(aid, addressController.text, wallet);
                         result.then((value) => {
                               if (value)
                                 {

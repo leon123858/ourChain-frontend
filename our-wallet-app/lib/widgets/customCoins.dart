@@ -4,6 +4,7 @@ import 'package:our_wallet_app/widgets/userProvider.dart';
 import 'package:provider/provider.dart';
 
 import '../services/aid/wrapper.dart';
+import '../services/wallet/wrapper.dart';
 
 class CustomCoins extends StatefulWidget {
   const CustomCoins({super.key});
@@ -40,8 +41,20 @@ class CustomCoinsState extends State<CustomCoins> {
                       );
                       return;
                     }
+                    // get current wallet
+                    Wallet? wallet =
+                        Provider.of<UserStateProvider>(context, listen: false)
+                            .wallet;
+                    if (wallet == null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('wallet is empty'),
+                        ),
+                      );
+                      return;
+                    }
                     // get coin list
-                    getCoinList(aid)
+                    getCoinList(aid, wallet)
                         .then((coinList) => {
                               setState(() {
                                 _coinList = coinList;

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../services/orc20/wrapper.dart';
@@ -29,26 +30,54 @@ class _NFTState extends State<NFT> {
       body: Column(
         children: [
           Center(
-            child: ElevatedButton(
-              onPressed: () {
-                // get coin list
-                getNFTList(widget.address)
-                    .then((coinList) => {
-                          setState(() {
-                            list = coinList;
-                          }),
-                        })
-                    .catchError((e) => {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('get coin list unexpected failed'),
+              child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  // get wallet
+                  var wallet =
+                      Provider.of<UserStateProvider>(context, listen: false)
+                          .getWallet;
+                  if (wallet == null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('wallet is empty'),
+                      ),
+                    );
+                    return;
+                  }
+                  // get coin list
+                  getNFTList(widget.address, wallet.getNodeUrl())
+                      .then((coinList) => {
+                            setState(() {
+                              list = coinList;
+                            }),
+                          })
+                      .catchError((e) => {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content:
+                                    Text('get coin list unexpected failed'),
+                              ),
                             ),
-                          ),
-                        });
-              },
-              child: const Text("Fetch NFT"),
-            ),
-          ),
+                          });
+                },
+                child: const Text("Fetch NFT"),
+              ),
+              IconButton(
+                  onPressed: () {
+                    // copy aid to clipboard
+                    Clipboard.setData(ClipboardData(text: widget.address));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('aid is copied to clipboard'),
+                      ),
+                    );
+                  },
+                  icon: const Icon(Icons.copy))
+            ],
+          )),
           Form(
             key: _formKey,
             child: Padding(
@@ -193,6 +222,28 @@ class _NFTState extends State<NFT> {
             child: ListView.builder(
               itemCount: list.length,
               itemBuilder: (context, index) {
+                String aid =
+                    Provider.of<UserStateProvider>(context, listen: false)
+                        .getAidMetaData("aid");
+                if (aid == list[index].owner) {
+                  return Container(
+                    margin: const EdgeInsets.all(20),
+                    decoration: const BoxDecoration(
+                      border: Border.fromBorderSide(
+                        BorderSide(
+                          color: Colors.red,
+                          width: 2,
+                        ),
+                      ),
+                    ),
+                    child: ListTile(
+                      // add multiple buttons in trailing
+                      trailing: const Text("Owner of this NFT is you"),
+                      leading: Text(list[index].coinName.toString()),
+                      title: Text(list[index].id.toString()),
+                    ),
+                  );
+                }
                 return Container(
                   margin: const EdgeInsets.all(20),
                   decoration: const BoxDecoration(

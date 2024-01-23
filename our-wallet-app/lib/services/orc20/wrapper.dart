@@ -5,8 +5,9 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'package:our_wallet_app/services/chain/contract.dart';
 import 'package:our_wallet_app/services/wallet/wrapper.dart';
 
-Future<String> loadAsset() async {
-  return await rootBundle.loadString('assets/orc20.cpp');
+Future<String> loadAsset(String aidAddress) async {
+  return (await rootBundle.loadString('assets/orc20.cpp'))
+      .replaceFirst("<AID_ADDRESS>", aidAddress);
 }
 
 class NFTItem {
@@ -23,16 +24,18 @@ Future<String?> createNFT(
       targetAddress: "",
       privateKey: wallet.privateKey,
       ownerAddress: wallet.address,
-      code: await loadAsset(),
-      args: [coinName, "$count", userAid]);
+      code: await loadAsset(wallet.getAidAddress()),
+      args: [coinName, "$count", userAid],
+      nodeUrl: wallet.getNodeUrl());
   if (result == null) {
     return null;
   }
   return result["contractAddress"];
 }
 
-Future<List<NFTItem>> getNFTList(String nftAddress) async {
+Future<List<NFTItem>> getNFTList(String nftAddress, String nodeUrl) async {
   String? result = await getContractMessage(
+    nodeUrl: nodeUrl,
     targetAddress: nftAddress,
     args: ["totalSupply"],
   );
@@ -57,6 +60,7 @@ Future<bool> transferNFT(String nftAddress, String aid, String targetAid,
       targetAddress: nftAddress,
       privateKey: wallet.privateKey,
       ownerAddress: wallet.address,
+      nodeUrl: wallet.getNodeUrl(),
       args: ["transfer", aid, targetAid, "$count", userPassword]);
   if (result == "") {
     return false;

@@ -40,6 +40,14 @@ class _LoginState extends State<Login> {
             .login(nameController.text, passwordController.text);
         Provider.of<UserStateProvider>(currentContext, listen: false)
             .setAidMetaData("aid", result);
+        // set disk wallet to provider
+        WalletBuilder().fromLocal().then((value) => {
+              if (value.isWalletExist())
+                {
+                  Provider.of<UserStateProvider>(context, listen: false)
+                      .setWallet(value.build()),
+                }
+            });
         // Navigate replace current page with home page
         Navigator.pushReplacement(
           currentContext,
@@ -69,6 +77,14 @@ class _LoginState extends State<Login> {
         _loginProcess();
       }
     });
+    // set wallet in disk to provider
+    WalletBuilder().fromLocal().then((value) => {
+          if (value.isWalletExist())
+            {
+              Provider.of<UserStateProvider>(context, listen: false)
+                  .setWallet(value.build()),
+            }
+        });
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

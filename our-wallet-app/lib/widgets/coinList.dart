@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import '../controllers/coin.dart';
 import '../controllers/nft.dart';
 import '../services/aid/wrapper.dart';
+import '../services/wallet/wrapper.dart';
 
 class CoinList extends StatelessWidget {
   const CoinList({Key? key, required this.list}) : super(key: key);
@@ -77,8 +78,21 @@ class CoinList extends StatelessWidget {
                             );
                             return;
                           }
+                          // get current wallet
+                          Wallet? wallet = Provider.of<UserStateProvider>(
+                                  context,
+                                  listen: false)
+                              .wallet;
+                          if (wallet == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('wallet is empty'),
+                              ),
+                            );
+                            return;
+                          }
                           // delete coin
-                          final result = removeCoin(aid, list[index]);
+                          final result = removeCoin(aid, list[index], wallet);
                           result.then((value) => {
                                 if (value)
                                   {

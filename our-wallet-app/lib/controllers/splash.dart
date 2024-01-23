@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:our_wallet_app/services/wallet/wrapper.dart';
-import 'package:our_wallet_app/utils/config.dart';
 import 'package:provider/provider.dart';
 
 import '../widgets/userProvider.dart';
+import 'config.dart';
 import 'login.dart';
 
 class SplashPage extends StatelessWidget {
@@ -21,22 +21,48 @@ class SplashPage extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () {
                 WalletBuilder builder = WalletBuilder();
-                builder.setAddress(defaultPublicKey);
-                builder.setPrivateKey(defaultPrivateKey);
-                // save to provider
-                Provider.of<UserStateProvider>(context, listen: false)
-                    .setWallet(builder.build());
-                // replace current page with login page
-                Navigator.pushReplacement(
+                builder.fromLocal().then((value) => {
+                      if (value.isWalletExist())
+                        {
+                          // save wallet to provider
+                          Provider.of<UserStateProvider>(context, listen: false)
+                              .setWallet(value.build()),
+                          // push current page with login page
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const Login(
+                                title: 'Login',
+                              ),
+                            ),
+                          ),
+                        }
+                      else
+                        {
+                          // say use advance config to set wallet
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text(
+                                    'Please use advance config to set wallet')),
+                          ),
+                        }
+                    });
+              },
+              child: const Text("Login"),
+            ),
+          ),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                // push current page with config page
+                Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => const Login(
-                      title: 'Login',
-                    ),
+                    builder: (context) => const Config(),
                   ),
                 );
               },
-              child: const Text("Login"),
+              child: const Text("Wallet Config"),
             ),
           ),
         ],

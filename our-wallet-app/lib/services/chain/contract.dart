@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
-import 'package:our_wallet_app/utils/config.dart';
 
 import 'basic.dart';
 
@@ -13,7 +12,8 @@ Future<Map<String, dynamic>?> deployContract(
     String privateKey = "",
     String ownerAddress = "",
     String code = "",
-    List<String> args = const []}) async {
+    List<String> args = const [],
+    required String nodeUrl}) async {
   final rawTx = await createTx(
       fee: fee,
       targetAddress: "",
@@ -23,22 +23,23 @@ Future<Map<String, dynamic>?> deployContract(
         'code': code,
         'address': targetAddress,
         'args': args,
-      });
+      },
+      nodeUrl: nodeUrl);
   if (rawTx == null) {
     if (kDebugMode) {
       print("Error: no rawTx available");
     }
     return null;
   }
-  final signedTx =
-      await signContract(rawTx: rawTx['hex'], privateKey: privateKey);
+  final signedTx = await signContract(
+      rawTx: rawTx['hex'], privateKey: privateKey, nodeUrl: nodeUrl);
   if (signedTx == null) {
     if (kDebugMode) {
       print("Error: no signedTx available");
     }
     return null;
   }
-  final txid = await sendTx(signedTx: signedTx);
+  final txid = await sendTx(signedTx: signedTx, nodeUrl: nodeUrl);
   if (txid == null) {
     if (kDebugMode) {
       print("Error: no txid available");
@@ -58,7 +59,8 @@ Future<String> callContract(
     String privateKey = "",
     String ownerAddress = "",
     String code = "",
-    List<String> args = const []}) async {
+    List<String> args = const [],
+    required String nodeUrl}) async {
   final rawTx = await createTx(
       fee: fee,
       targetAddress: "",
@@ -68,22 +70,23 @@ Future<String> callContract(
         'code': code,
         'address': targetAddress,
         'args': args,
-      });
+      },
+      nodeUrl: nodeUrl);
   if (rawTx == null) {
     if (kDebugMode) {
       print('Error: no rawTx available');
     }
     return "";
   }
-  final signedTx =
-      await signContract(rawTx: rawTx['hex'], privateKey: privateKey);
+  final signedTx = await signContract(
+      rawTx: rawTx['hex'], privateKey: privateKey, nodeUrl: nodeUrl);
   if (signedTx == null) {
     if (kDebugMode) {
       print('Error: no signedTx available');
     }
     return "";
   }
-  final txid = await sendTx(signedTx: signedTx);
+  final txid = await sendTx(signedTx: signedTx, nodeUrl: nodeUrl);
   if (txid == null) {
     if (kDebugMode) {
       print('Error: no txId available');
@@ -95,9 +98,11 @@ Future<String> callContract(
 
 /// Contract Methods
 Future<String?> getContractMessage(
-    {String targetAddress = "", List<String> args = const []}) async {
+    {String targetAddress = "",
+    List<String> args = const [],
+    required String nodeUrl}) async {
   final result = await http.post(
-    Uri.parse('${baseUrl}get/contractmessage'),
+    Uri.parse('${nodeUrl}get/contractmessage'),
     headers: {'Content-Type': 'application/json'},
     body: json.encode({
       'address': targetAddress,

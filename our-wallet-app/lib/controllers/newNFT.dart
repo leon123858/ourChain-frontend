@@ -105,7 +105,7 @@ class _NewNFTState extends State<NewNFT> {
                               if (value != null)
                                 {
                                   // add coin success
-                                  addCoin(aid, value).then((value) => {
+                                  addCoin(aid, value, wallet).then((value) => {
                                         if (value)
                                           {
                                             ScaffoldMessenger.of(context)

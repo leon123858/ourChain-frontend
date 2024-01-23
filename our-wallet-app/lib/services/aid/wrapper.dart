@@ -2,14 +2,14 @@ import 'dart:convert';
 
 import 'package:our_wallet_app/services/chain/contract.dart';
 import 'package:our_wallet_app/services/wallet/wrapper.dart';
-import 'package:our_wallet_app/utils/config.dart';
 
 Future<bool> register(String name, String password, Wallet wallet) async {
   var result = await callContract(
-      targetAddress: aidAddress,
+      targetAddress: wallet.getAidAddress(),
       privateKey: wallet.privateKey,
       ownerAddress: wallet.address,
-      args: ["registerNewUser", name, password]);
+      args: ["registerNewUser", name, password],
+      nodeUrl: wallet.getNodeUrl());
   if (result == "") {
     return false;
   }
@@ -18,8 +18,9 @@ Future<bool> register(String name, String password, Wallet wallet) async {
 
 Future<String?> login(String name, String password, Wallet wallet) async {
   String? result = await getContractMessage(
-    targetAddress: aidAddress,
+    targetAddress: wallet.getAidAddress(),
     args: ["login", name, password],
+    nodeUrl: wallet.getNodeUrl(),
   );
   if (result == null) {
     return null;
@@ -33,10 +34,11 @@ Future<String?> login(String name, String password, Wallet wallet) async {
   return null;
 }
 
-Future<List<String>> getCoinList(String userAid) async {
+Future<List<String>> getCoinList(String userAid, Wallet wallet) async {
   String? result = await getContractMessage(
-    targetAddress: aidAddress,
+    targetAddress: wallet.getAidAddress(),
     args: ["getCoins", userAid],
+    nodeUrl: wallet.getNodeUrl(),
   );
   if (result == null) {
     return [];
@@ -50,24 +52,27 @@ Future<List<String>> getCoinList(String userAid) async {
   return [];
 }
 
-Future<bool> addCoin(String userAid, String coinAddress) async {
+Future<bool> addCoin(String userAid, String coinAddress, Wallet wallet) async {
   var result = await callContract(
-      targetAddress: aidAddress,
-      privateKey: defaultPrivateKey,
-      ownerAddress: defaultPublicKey,
-      args: ["setCoin", userAid, coinAddress]);
+      targetAddress: wallet.getAidAddress(),
+      privateKey: wallet.privateKey,
+      ownerAddress: wallet.address,
+      args: ["setCoin", userAid, coinAddress],
+      nodeUrl: wallet.getNodeUrl());
   if (result == "") {
     return false;
   }
   return true;
 }
 
-Future<bool> removeCoin(String userAid, String coinAddress) async {
+Future<bool> removeCoin(
+    String userAid, String coinAddress, Wallet wallet) async {
   var result = await callContract(
-      targetAddress: aidAddress,
-      privateKey: defaultPrivateKey,
-      ownerAddress: defaultPublicKey,
-      args: ["removeCoin", userAid, coinAddress]);
+      targetAddress: wallet.getAidAddress(),
+      privateKey: wallet.privateKey,
+      ownerAddress: wallet.address,
+      args: ["removeCoin", userAid, coinAddress],
+      nodeUrl: wallet.getNodeUrl());
   if (result == "") {
     return false;
   }
