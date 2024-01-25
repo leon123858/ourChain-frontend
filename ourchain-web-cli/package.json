@@ -9,7 +9,8 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "deploy": "npm run build && firebase deploy",
-    "cypress": "npx cypress open"
+    "cypress": "npx cypress open",
+    "docker": "docker buildx build --no-cache -t ourchain-web-cli -f ./Dockerfile --platform linux/amd64 . && docker tag ourchain-web-cli leon1234858/ourchain-web-cli:latest && docker push leon1234858/ourchain-web-cli:latest"
   },
   "dependencies": {
     "antd": "^5.11.0",
