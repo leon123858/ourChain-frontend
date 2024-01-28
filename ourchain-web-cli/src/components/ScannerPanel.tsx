@@ -1,7 +1,7 @@
 import {List, Typography} from "antd";
 import React, {useEffect} from "react";
-import {BASE_URL} from "../utils/config.ts";
-
+import {config} from "../utils/config.ts";
+const BASE_URL = config.BASE_URL;
 
 function ScannerPanel() {
     const [utxoList, setUtxoList] = React.useState([])

@@ -1,4 +1,5 @@
-import {BASE_URL} from './config.ts';
+import {config} from './config.ts';
+const BASE_URL = config.BASE_URL;
 
 async function getUtxo(fee = 0.0001, targetAddress = '', ownerAddress = '') {
     // GET http://localhost:8080/get/utxo

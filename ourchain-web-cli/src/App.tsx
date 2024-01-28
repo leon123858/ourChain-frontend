@@ -2,7 +2,8 @@ import React from 'react';
 import {Button, Layout, Menu, theme} from 'antd';
 import InputPanel from "./components/InputPanel.tsx";
 import ScannerPanel from "./components/ScannerPanel.tsx";
-import {BASE_URL} from "./utils/config.ts";
+import {config} from "./utils/config.ts";
+const BASE_URL = config.BASE_URL;
 
 const {Header, Content, Sider} = Layout;
 
