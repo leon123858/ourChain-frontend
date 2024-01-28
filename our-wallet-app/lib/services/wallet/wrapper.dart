@@ -30,7 +30,7 @@ class Wallet {
     }
     double balance = 0;
     for (var utxo in utxoList) {
-      if (utxo['confirmations'] > 100) {
+      if (utxo['confirmations'] > 1) {
         balance += utxo['amount'];
       }
     }
