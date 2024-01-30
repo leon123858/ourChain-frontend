@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:our_wallet_app/controllers/StoreList.dart';
 import 'package:our_wallet_app/controllers/newNFT.dart';
+import 'package:our_wallet_app/controllers/setStore.dart';
 import 'package:our_wallet_app/widgets/ourCoins.dart';
 import 'package:provider/provider.dart';
 
@@ -91,6 +93,28 @@ class HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            ListTile(
+                title: const Text('store list'),
+                onTap: () {
+                  // goto store list page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const StoreList(),
+                    ),
+                  );
+                }),
+            ListTile(
+                title: const Text('my store'),
+                onTap: () {
+                  // goto add coin page
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const MyStore(),
+                    ),
+                  );
+                }),
             ListTile(
                 title: const Text('generate coin (orc20)'),
                 onTap: () {
