@@ -111,7 +111,7 @@ class HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => const MyStore(),
+                      builder: (context) => MyStore(userAid: _aid,),
                     ),
                   );
                 }),

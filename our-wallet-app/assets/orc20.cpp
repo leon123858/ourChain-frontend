@@ -44,7 +44,11 @@ enum Command
 };
 
 static std::unordered_map<std::string, Command> const string2Command = {{"totalSupply", Command::totalSupply}, {"balanceOf", Command::balanceOf}, {"transfer", Command::transfer}, {"allowance", Command::allowance}, {"approve", Command::approve}, {"transferFrom", Command::transferFrom}};
-static std::string aidContractAddress = "<AID_ADDRESS>";
+static std::string aidContractAddress = "";
+
+/**
+ * Utils
+ */
 
 char *getDynamicString(const char *str)
 {
@@ -90,26 +94,67 @@ bool verifyUser(std::string aid, std::string password)
     return false;
   }
   return true;
+}
+
+/**
+ * Data Structure
+ */
+
+struct coin
+{
+  int id;
+  std::string owner;
 };
 
+struct orc20
+{
+  std::string aidAddress;
+  std::string coinName;
+  std::vector<coin> coins;
+};
+
+void to_json(json &j, const coin &p)
+{
+  j = json{{"id", p.id}, {"owner", p.owner}};
+}
+
+void from_json(const json &j, coin &p)
+{
+  j.at("id").get_to(p.id);
+  j.at("owner").get_to(p.owner);
+}
+
+void to_json(json &j, const orc20 &p)
+{
+  j = json{{"aidAddress", p.aidAddress}, {"coinName", p.coinName}, {"coins", p.coins}};
+}
+
+void from_json(const json &j, orc20 &p)
+{
+  j.at("aidAddress").get_to(p.aidAddress);
+  j.at("coinName").get_to(p.coinName);
+  j.at("coins").get_to(p.coins);
+}
+
+/**
+ * Main
+ */
 extern "C" int contract_main(int argc, char **argv)
 {
   // init state
   if (!state_exist())
   {
-    json j = json::array();
-    std::string coinName = argv[1];
+    orc20 newOrc20;
+    newOrc20.coinName = argv[1];
     int count = atoi(argv[2]);
     std::string aid = argv[3];
+    newOrc20.aidAddress = argv[4];
     for (int i = 0; i < count; i++)
     {
-      json tmp;
-      tmp["coinName"] = coinName;
-      tmp["id"] = i;
-      tmp["owner"] = aid;
-      j.push_back(tmp);
+      coin newCoin = coin{i + 1, aid};
+      newOrc20.coins.push_back(newCoin);
     }
-    state_write(j);
+    state_write(newOrc20);
     return 0;
   }
   // execute command
@@ -132,7 +177,19 @@ extern "C" int contract_main(int argc, char **argv)
     {
       return 0;
     }
-    state_write(state_read());
+    {
+      orc20 curOrc20 = state_read();
+      json j = json::array();
+      for (auto &it : curOrc20.coins)
+      {
+        json tmp = json::object();
+        tmp["id"] = it.id;
+        tmp["owner"] = it.owner;
+        tmp["coinName"] = curOrc20.coinName;
+        j.push_back(tmp);
+      }
+      state_write(j);
+    }
     break;
   case Command::balanceOf:
     if (check_runtime_can_write_db())
@@ -141,16 +198,20 @@ extern "C" int contract_main(int argc, char **argv)
     }
     {
       std::string aid = argv[2];
-      json j = state_read();
-      json ownList = json::array();
-      for (auto &it : j)
+      orc20 curOrc20 = state_read();
+      json j = json::array();
+      for (auto &it : curOrc20.coins)
       {
-        if (it["owner"] == aid)
+        if (it.owner == aid)
         {
-          ownList.push_back(it);
+          json tmp = json::object();
+          tmp["id"] = it.id;
+          tmp["owner"] = it.owner;
+          tmp["coinName"] = curOrc20.coinName;
+          j.push_back(tmp);
         }
       }
-      state_write(ownList);
+      state_write(j);
     }
     break;
   case Command::transfer:
@@ -164,38 +225,40 @@ extern "C" int contract_main(int argc, char **argv)
       std::string targetAid = argv[3];
       int count = atoi(argv[4]);
       std::string password = argv[5];
-      // check if aid is valid
+      orc20 curOrc20 = state_read();
+      aidContractAddress = curOrc20.aidAddress;
       if (!verifyUser(aid, password))
       {
         return 0;
       }
-      // start execute transfer
-      json j = state_read();
-      json ownList = json::array();
-      for (auto &it : j)
+      // check if aid has enough coins
+      int aidCount = 0;
+      for (auto &it : curOrc20.coins)
       {
-        if (it["owner"] == aid)
+        if (it.owner == aid)
         {
-          ownList.push_back(it);
+          aidCount++;
         }
       }
-      if (static_cast<int>(ownList.size()) < count)
+      if (aidCount < count)
       {
-        std::cerr << "not enough token" << std::endl;
+        std::cerr << "aid has not enough coins" << std::endl;
         return 0;
       }
-      for (int i = 0; i < count; i++)
+      // transfer coins
+      for (auto &it : curOrc20.coins)
       {
-        for (auto &it : j)
+        if (it.owner == aid)
         {
-          if (it["owner"] == aid)
-          {
-            it["owner"] = targetAid;
-            break;
-          }
+          it.owner = targetAid;
+          count--;
+        }
+        if (count == 0)
+        {
+          break;
         }
       }
-      state_write(j);
+      state_write(curOrc20);
     }
     break;
   case Command::allowance:
@@ -217,7 +280,40 @@ extern "C" int contract_main(int argc, char **argv)
     {
       return 0;
     }
-    std::cerr << "transferFrom not implemented" << std::endl;
+    {
+      std::string aid = argv[2];
+      std::string targetAid = argv[3];
+      int count = atoi(argv[4]);
+      orc20 curOrc20 = state_read();
+      // check if aid has enough coins
+      int aidCount = 0;
+      for (auto &it : curOrc20.coins)
+      {
+        if (it.owner == aid)
+        {
+          aidCount++;
+        }
+      }
+      if (aidCount < count)
+      {
+        std::cerr << "aid has not enough coins" << std::endl;
+        return 0;
+      }
+      // transfer coins
+      for (auto &it : curOrc20.coins)
+      {
+        if (it.owner == aid)
+        {
+          it.owner = targetAid;
+          count--;
+        }
+        if (count == 0)
+        {
+          break;
+        }
+      }
+      state_write(curOrc20);
+    }
     break;
   default:
     break;

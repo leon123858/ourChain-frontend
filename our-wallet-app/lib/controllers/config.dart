@@ -14,6 +14,7 @@ class _ConfigState extends State<Config> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController nodeUrlController = TextEditingController();
   TextEditingController aidAddressController = TextEditingController();
+  TextEditingController storeAddressController = TextEditingController();
   TextEditingController publicKeyController = TextEditingController();
   TextEditingController privateKeyController = TextEditingController();
 
@@ -26,6 +27,7 @@ class _ConfigState extends State<Config> {
               tmp = value.build(),
               nodeUrlController.text = tmp.getNodeUrl(),
               aidAddressController.text = tmp.getAidAddress(),
+              storeAddressController.text = tmp.getStoreAddress(),
               publicKeyController.text = tmp.getAddress(),
               privateKeyController.text = tmp.getPrivateKey(),
             }
@@ -33,6 +35,7 @@ class _ConfigState extends State<Config> {
             {
               nodeUrlController.text = baseUrl,
               aidAddressController.text = aidAddress,
+              storeAddressController.text = storeAddress,
               publicKeyController.text = defaultPublicKey,
               privateKeyController.text = defaultPrivateKey,
             }
@@ -81,6 +84,22 @@ class _ConfigState extends State<Config> {
               ),
               Padding(
                 padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  controller: storeAddressController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "store contract address"),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your store contract address';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              Padding(
+                padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
                   controller: publicKeyController,
@@ -121,6 +140,7 @@ class _ConfigState extends State<Config> {
                             .setPrivateKey(privateKeyController.text)
                             .setAidAddress(aidAddressController.text)
                             .setNodeUrl(nodeUrlController.text)
+                            .setStoreAddress(storeAddressController.text)
                             .build()
                             .saveLocal()
                             .then((value) => {

@@ -5,6 +5,7 @@ class Wallet {
   final String address;
   final String privateKey;
   final String aidAddress;
+  final String storeAddress;
   final String nodeUrl;
 
   String getAddress() {
@@ -21,6 +22,10 @@ class Wallet {
 
   String getNodeUrl() {
     return nodeUrl;
+  }
+
+  String getStoreAddress() {
+    return storeAddress;
   }
 
   Future<double> getBalance() async {
@@ -43,13 +48,15 @@ class Wallet {
     instance.setString('address', address);
     instance.setString('privateKey', privateKey);
     instance.setString('aidAddress', aidAddress);
+    instance.setString('storeAddress', storeAddress);
   }
 
   Wallet(
       {required this.aidAddress,
       required this.nodeUrl,
       required this.address,
-      required this.privateKey});
+      required this.privateKey,
+      required this.storeAddress});
 }
 
 class WalletBuilder {
@@ -57,6 +64,7 @@ class WalletBuilder {
   String? privateKey;
   String? aidAddress;
   String? nodeUrl;
+  String? storeAddress;
 
   Wallet build() {
     if (address == null) {
@@ -71,11 +79,16 @@ class WalletBuilder {
     if (nodeUrl == null) {
       throw Exception("Node url is required");
     }
+    if (storeAddress == null) {
+      throw Exception("Store address is required");
+    }
+
     return Wallet(
         address: address!,
         privateKey: privateKey!,
         aidAddress: aidAddress!,
-        nodeUrl: nodeUrl!);
+        nodeUrl: nodeUrl!,
+        storeAddress: storeAddress!);
   }
 
   Future<WalletBuilder> fromLocal() async {
@@ -85,16 +98,19 @@ class WalletBuilder {
     var address = instance.getString('address');
     var privateKey = instance.getString('privateKey');
     var aidAddress = instance.getString('aidAddress');
+    var storeAddress = instance.getString('storeAddress');
     if (nodeUrl == null ||
         address == null ||
         privateKey == null ||
-        aidAddress == null) {
+        aidAddress == null ||
+        storeAddress == null) {
       return this;
     }
     this.nodeUrl = nodeUrl;
     this.address = address;
     this.privateKey = privateKey;
     this.aidAddress = aidAddress;
+    this.storeAddress = storeAddress;
     return this;
   }
 
@@ -105,6 +121,7 @@ class WalletBuilder {
     instance.remove('address');
     instance.remove('privateKey');
     instance.remove('aidAddress');
+    instance.remove('storeAddress');
   }
 
   WalletBuilder setAddress(String address) {
@@ -127,10 +144,16 @@ class WalletBuilder {
     return this;
   }
 
+  WalletBuilder setStoreAddress(String storeAddress) {
+    this.storeAddress = storeAddress;
+    return this;
+  }
+
   bool isWalletExist() {
     return address != null &&
         privateKey != null &&
         aidAddress != null &&
-        nodeUrl != null;
+        nodeUrl != null &&
+        storeAddress != null;
   }
 }
