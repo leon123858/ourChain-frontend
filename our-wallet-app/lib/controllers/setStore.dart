@@ -62,7 +62,7 @@ class _MyStoreState extends State<MyStore> {
           },
           child: const Text("Fetch Store Information"),
         )),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 1.0),
         Container(
           decoration: BoxDecoration(
             border: Border.all(
@@ -78,7 +78,7 @@ class _MyStoreState extends State<MyStore> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: storeNameInput,
                     decoration: const InputDecoration(
@@ -93,7 +93,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: passwordInput,
                     obscureText: true,
@@ -109,7 +109,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () async {
@@ -140,7 +140,7 @@ class _MyStoreState extends State<MyStore> {
             ),
           ),
         ),
-        const SizedBox(height: 10.0),
+        const SizedBox(height: 1.0),
         Container(
           decoration: BoxDecoration(
             border: Border.all(
@@ -156,7 +156,7 @@ class _MyStoreState extends State<MyStore> {
               children: [
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: productNameInput,
                     keyboardType: TextInputType.text,
@@ -173,7 +173,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: productPriceInput,
                     keyboardType: TextInputType.number,
@@ -181,8 +181,9 @@ class _MyStoreState extends State<MyStore> {
                         border: OutlineInputBorder(),
                         labelText: "product Price"),
                     validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter your product Price';
+                      // check if the input is a number
+                      if (double.tryParse(value!) == null) {
+                        return 'Please enter a valid number';
                       }
                       return null;
                     },
@@ -190,7 +191,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: productAddressInput,
                     keyboardType: TextInputType.text,
@@ -207,7 +208,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: passwordInput,
                     obscureText: true,
@@ -223,10 +224,30 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
                   child: Center(
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () async {
+                        if(_formKey2.currentState!.validate()){
+                          int price = int.parse(productPriceInput.text);
+                          storeWrapper ??= await StoreWrapper.create(wallet, widget.userAid);
+                          final result = await storeWrapper!.addProduct(wallet, productNameInput.text, productPriceInput.text, price, passwordInput.text);
+                          if (!context.mounted) return;
+                          if(result){
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('product added successfully'),
+                              ),
+                            );
+                          }else{
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('product added failed'),
+                              ),
+                            );
+                          }
+                        }
+                      },
                       child: const Text("Restock Store"),
                     ),
                   ),

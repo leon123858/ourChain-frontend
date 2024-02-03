@@ -38,13 +38,14 @@ class StoreWrapper {
     return true;
   }
 
-  Future<bool> addProduct(Wallet wallet, String name, String password, String price, String productAddress) async {
+  Future<bool> addProduct(Wallet wallet, String name, String password, int price, String productAddress) async {
+    String priceStr = price.toString();
     var result = await callContract(
       targetAddress: wallet.getStoreAddress(),
       privateKey: wallet.getPrivateKey(),
       ownerAddress: wallet.getAddress(),
       nodeUrl: wallet.getNodeUrl(),
-      args: ["addProduct", address, password, name, price, productAddress],
+      args: ["createProduct", address, password, name, priceStr, productAddress],
     );
     if (result == "") {
       return false;
