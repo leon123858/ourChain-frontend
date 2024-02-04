@@ -6,15 +6,14 @@ import '../widgets/userProvider.dart';
 
 class MyStore extends StatefulWidget {
   const MyStore({super.key, required this.userAid});
-  final String userAid;
 
+  final String userAid;
 
   @override
   State<MyStore> createState() => _MyStoreState();
 }
 
 class _MyStoreState extends State<MyStore> {
-  List<String> list = ["product1", "product2", "product3"];
   final _formKey1 = GlobalKey<FormState>();
   final _formKey2 = GlobalKey<FormState>();
   StoreWrapper? storeWrapper;
@@ -27,8 +26,7 @@ class _MyStoreState extends State<MyStore> {
   @override
   Widget build(BuildContext context) {
     var wallet =
-        Provider.of<UserStateProvider>(context, listen: false)
-            .getWallet;
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -44,10 +42,10 @@ class _MyStoreState extends State<MyStore> {
       body: Column(children: [
         Center(
             child: ElevatedButton(
-          onPressed:  () async {
-            storeWrapper = await StoreWrapper.create(wallet,widget.userAid);
+          onPressed: () async {
+            storeWrapper = await StoreWrapper.create(wallet, widget.userAid);
             if (!context.mounted) return;
-            if(storeWrapper!.name == ""){
+            if (storeWrapper!.name == "") {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Text('store not exist'),
@@ -93,7 +91,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: passwordInput,
                     obscureText: true,
@@ -115,15 +113,16 @@ class _MyStoreState extends State<MyStore> {
                       onPressed: () async {
                         // check valid data input
                         if (_formKey1.currentState!.validate()) {
-                          final result = await storeWrapper!.setStoreInfo(wallet, storeNameInput.text, passwordInput.text);
+                          final result = await storeWrapper!.setStoreInfo(
+                              wallet, storeNameInput.text, passwordInput.text);
                           if (!context.mounted) return;
-                          if(result){
+                          if (result) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('store set successfully'),
                               ),
                             );
-                          }else{
+                          } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('store set failed'),
@@ -208,7 +207,7 @@ class _MyStoreState extends State<MyStore> {
                 ),
                 Padding(
                   padding:
-                  const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
+                      const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
                   child: TextFormField(
                     controller: passwordInput,
                     obscureText: true,
@@ -228,18 +227,24 @@ class _MyStoreState extends State<MyStore> {
                   child: Center(
                     child: ElevatedButton(
                       onPressed: () async {
-                        if(_formKey2.currentState!.validate()){
+                        if (_formKey2.currentState!.validate()) {
                           int price = int.parse(productPriceInput.text);
-                          storeWrapper ??= await StoreWrapper.create(wallet, widget.userAid);
-                          final result = await storeWrapper!.addProduct(wallet, productNameInput.text, productPriceInput.text, price, passwordInput.text);
+                          storeWrapper ??=
+                              await StoreWrapper.create(wallet, widget.userAid);
+                          final result = await storeWrapper!.addProduct(
+                              wallet,
+                              productNameInput.text,
+                              passwordInput.text,
+                              price,
+                              productAddressInput.text);
                           if (!context.mounted) return;
-                          if(result){
+                          if (result) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('product added successfully'),
                               ),
                             );
-                          }else{
+                          } else {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text('product added failed'),

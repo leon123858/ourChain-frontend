@@ -84,7 +84,7 @@ class _ConfigState extends State<Config> {
               ),
               Padding(
                 padding:
-                const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
                 child: TextFormField(
                   controller: storeAddressController,
                   decoration: const InputDecoration(

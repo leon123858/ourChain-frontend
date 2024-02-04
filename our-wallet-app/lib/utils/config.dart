@@ -1,8 +1,8 @@
-const baseUrl = 'https://our-chain.tech/';
+const baseUrl = 'http://localhost:8080/';
 const aidAddress =
-    "f28f82717c7725d71fcb96346c0aa5521475002c1c06516e950d470352f97c96";
+    "a11847eb620727aa7080fb2d84eb34a166459b155321f5e323f711b1266e230e";
 const storeAddress =
-    "f28f82717c7725d71fcb96346c0aa5521475002c1c06516e950d470352f97c96";
-const defaultPublicKey = "mvcA5hi9JP5ABf4iAd499u7krD9z5czyk1";
+    "ad2df347f0f598656291e8274ba19f556feda22e3267b194eff94c449e962d49";
+const defaultPublicKey = "mohNh8EGUWea9YUEaiYhyEXDZDPZC1qvkV";
 const defaultPrivateKey =
-    "cSTpDsQontYcC2T95LUQjKkZs6uAQAyeug1LC14391gcPHfZTr5b";
+    "cW2n5UxSmcxrBieKBDoh6PmJc4wQs53ue98AqqGQ8seBhQEJ3CNd";

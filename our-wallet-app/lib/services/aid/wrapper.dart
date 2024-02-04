@@ -78,3 +78,16 @@ Future<bool> removeCoin(
   }
   return true;
 }
+
+Future<bool> buyCoin(String coinAddress, String srcAid, String targetAid, int count,Wallet wallet) async {
+  var result = await callContract(
+      targetAddress: coinAddress,
+      privateKey: wallet.privateKey,
+      ownerAddress: wallet.address,
+      args: ["transferFrom", srcAid, targetAid, count.toString()],
+      nodeUrl: wallet.getNodeUrl());
+  if (result == "") {
+    return false;
+  }
+  return true;
+}

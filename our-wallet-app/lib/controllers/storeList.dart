@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:our_wallet_app/controllers/store.dart';
+import 'package:provider/provider.dart';
+
+import '../services/store/wrapper.dart';
+import '../widgets/userProvider.dart';
 
 class StoreList extends StatefulWidget {
   const StoreList({super.key});
@@ -9,18 +13,35 @@ class StoreList extends StatefulWidget {
 }
 
 class _StoreListState extends State<StoreList> {
-  List<String> list = ["store1", "store2", "store3"];
+  List<AbstractStore> list = [];
 
   @override
   Widget build(BuildContext context) {
+    var wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('wallet is empty'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("setting your Store here"),
+        title: const Text("Mall Page"),
       ),
       body: Column(children: [
         Center(
             child: ElevatedButton(
-          onPressed: () {},
+          onPressed: () async {
+            var result = await getStoreList(wallet);
+            if (!context.mounted) return;
+            setState(() {
+              list = result;
+            });
+          },
           child: const Text("Fetch Store List Information"),
         )),
         const SizedBox(height: 10.0),
@@ -49,7 +70,9 @@ class _StoreListState extends State<StoreList> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const Store(),
+                              builder: (context) => Store(
+                                id: list[index].aid,
+                              ),
                             ),
                           );
                         },
@@ -57,7 +80,7 @@ class _StoreListState extends State<StoreList> {
                     ],
                   ),
                   leading: const Icon(Icons.store),
-                  title: Text(list[index]),
+                  title: Text(list[index].name),
                 ),
               );
             },
