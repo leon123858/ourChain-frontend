@@ -225,37 +225,68 @@ class _MyStoreState extends State<MyStore> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 4, vertical: 8.0),
                   child: Center(
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        if (_formKey2.currentState!.validate()) {
-                          int price = int.parse(productPriceInput.text);
-                          storeWrapper ??=
-                              await StoreWrapper.create(wallet, widget.userAid);
-                          final result = await storeWrapper!.addProduct(
-                              wallet,
-                              productNameInput.text,
-                              passwordInput.text,
-                              price,
-                              productAddressInput.text);
-                          if (!context.mounted) return;
-                          if (result) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('product added successfully'),
-                              ),
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('product added failed'),
-                              ),
-                            );
+                      child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey2.currentState!.validate()) {
+                            int price = int.parse(productPriceInput.text);
+                            storeWrapper ??= await StoreWrapper.create(
+                                wallet, widget.userAid);
+                            final result = await storeWrapper!.addProduct(
+                                wallet,
+                                productNameInput.text,
+                                passwordInput.text,
+                                price,
+                                productAddressInput.text);
+                            if (!context.mounted) return;
+                            if (result) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('product added successfully'),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('product added failed'),
+                                ),
+                              );
+                            }
                           }
-                        }
-                      },
-                      child: const Text("Restock Store"),
-                    ),
-                  ),
+                        },
+                        child: const Text("Restock Store"),
+                      ),
+                      ElevatedButton(
+                        onPressed: () async {
+                          if (_formKey2.currentState!.validate()) {
+                            storeWrapper ??= await StoreWrapper.create(
+                                wallet, widget.userAid);
+                            final result = await storeWrapper!.removeProduct(
+                                wallet,
+                                passwordInput.text,
+                                productNameInput.text);
+                            if (!context.mounted) return;
+                            if (result) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('product remove successfully'),
+                                ),
+                              );
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('product remove failed'),
+                                ),
+                              );
+                            }
+                          }
+                        },
+                        child: const Text("remove product"),
+                      ),
+                    ],
+                  )),
                 ),
               ],
             ),

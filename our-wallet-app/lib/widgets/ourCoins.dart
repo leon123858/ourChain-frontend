@@ -16,6 +16,23 @@ class _OurCoinsState extends State<OurCoins> {
 
   @override
   Widget build(BuildContext context) {
+    // get current wallet
+    Wallet? wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please create wallet first'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
+    // get balance
+    wallet.getBalance().then((value) {
+      setState(() {
+        _ourCoin = value;
+      });
+    });
     return Container(
         margin: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
@@ -46,18 +63,6 @@ class _OurCoinsState extends State<OurCoins> {
             IconButton(
               icon: const Icon(Icons.refresh),
               onPressed: () async {
-                // get current wallet
-                Wallet? wallet =
-                    Provider.of<UserStateProvider>(context, listen: false)
-                        .getWallet;
-                if (wallet == null) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Please create wallet first'),
-                    ),
-                  );
-                  return;
-                }
                 // get balance
                 var balance = await wallet.getBalance();
                 setState(() {

@@ -23,6 +23,32 @@ class _NFTState extends State<NFT> {
 
   @override
   Widget build(BuildContext context) {
+    // get wallet
+    var wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('wallet is empty'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
+    // get provider aid
+    String aid = Provider.of<UserStateProvider>(context, listen: false)
+        .getAidMetaData("aid");
+    if (aid == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login first')),
+      );
+      throw Exception("aid is empty");
+    }
+    // get NFT list
+    getNFTList(widget.address, wallet.getNodeUrl()).then((result) {
+      setState(() {
+        list = result;
+      });
+    });
     return Scaffold(
       appBar: AppBar(
         title: const Text("setting your NFT here"),
@@ -34,34 +60,23 @@ class _NFTState extends State<NFT> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                onPressed: () {
-                  // get wallet
-                  var wallet =
-                      Provider.of<UserStateProvider>(context, listen: false)
-                          .getWallet;
-                  if (wallet == null) {
+                onPressed: () async {
+                  // get coin list
+                  try {
+                    var result =
+                        await getNFTList(widget.address, wallet.getNodeUrl());
+                    setState(() {
+                      list = result;
+                    });
+                    return;
+                  } catch (e) {
+                    if (!context.mounted) return;
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text('wallet is empty'),
+                        content: Text('get coin list unexpected failed'),
                       ),
                     );
-                    return;
                   }
-                  // get coin list
-                  getNFTList(widget.address, wallet.getNodeUrl())
-                      .then((coinList) => {
-                            setState(() {
-                              list = coinList;
-                            }),
-                          })
-                      .catchError((e) => {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content:
-                                    Text('get coin list unexpected failed'),
-                              ),
-                            ),
-                          });
                 },
                 child: const Text("Fetch NFT"),
               ),
@@ -114,6 +129,10 @@ class _NFTState extends State<NFT> {
                         if (value == null || value.isEmpty) {
                           return 'Please enter your coin count';
                         }
+                        int? count = int.tryParse(countController.text);
+                        if (count == null) {
+                          return 'Please enter a number';
+                        }
                         return null;
                       },
                     ),
@@ -139,68 +158,33 @@ class _NFTState extends State<NFT> {
                         horizontal: 8, vertical: 16.0),
                     child: Center(
                       child: ElevatedButton(
-                        onPressed: () {
+                        onPressed: () async {
                           if (_formKey.currentState!.validate()) {
-                            // get provider aid
-                            String aid = Provider.of<UserStateProvider>(context,
-                                    listen: false)
-                                .getAidMetaData("aid");
-                            if (aid == "") {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('Please login first')),
-                              );
-                              return;
-                            }
-                            // get wallet
-                            var wallet = Provider.of<UserStateProvider>(context,
-                                    listen: false)
-                                .getWallet;
-                            if (wallet == null) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text('wallet is empty')),
-                              );
-                              return;
-                            }
                             // parse int
                             int? count = int.tryParse(countController.text);
-                            if (count == null) {
+                            // transfer
+                            var result = await transferNFT(
+                                widget.address,
+                                aid,
+                                targetAidController.text,
+                                count!,
+                                passwordController.text,
+                                wallet);
+                            if (!context.mounted) return;
+                            if (result) {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(
-                                  content: Text('Please enter a number'),
+                                  content: Text('Transfer success'),
                                 ),
                               );
                               return;
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  content: Text('Transfer failed'),
+                                ),
+                              );
                             }
-                            // transfer
-                            transferNFT(
-                                    widget.address,
-                                    aid,
-                                    targetAidController.text,
-                                    count,
-                                    passwordController.text,
-                                    wallet)
-                                .then((value) => {
-                                      if (value)
-                                        {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content:
-                                                    Text('Transfer success')),
-                                          ),
-                                        }
-                                      else
-                                        {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            const SnackBar(
-                                                content:
-                                                    Text('Transfer failed')),
-                                          ),
-                                        }
-                                    });
                             return;
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -218,52 +202,54 @@ class _NFTState extends State<NFT> {
               ),
             ),
           ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: list.length,
-              itemBuilder: (context, index) {
-                String aid =
-                    Provider.of<UserStateProvider>(context, listen: false)
-                        .getAidMetaData("aid");
-                if (aid == list[index].owner) {
-                  return Container(
-                    margin: const EdgeInsets.all(20),
-                    decoration: const BoxDecoration(
-                      border: Border.fromBorderSide(
-                        BorderSide(
-                          color: Colors.red,
-                          width: 2,
+          list.isEmpty
+              ? const Text('暫無內容, 可嘗試刷新')
+              : Expanded(
+                  child: ListView.builder(
+                    itemCount: list.length,
+                    itemBuilder: (context, index) {
+                      String aid =
+                          Provider.of<UserStateProvider>(context, listen: false)
+                              .getAidMetaData("aid");
+                      if (aid == list[index].owner) {
+                        return Container(
+                          margin: const EdgeInsets.all(20),
+                          decoration: const BoxDecoration(
+                            border: Border.fromBorderSide(
+                              BorderSide(
+                                color: Colors.red,
+                                width: 2,
+                              ),
+                            ),
+                          ),
+                          child: ListTile(
+                            // add multiple buttons in trailing
+                            trailing: const Text("Owner of this NFT is you"),
+                            leading: Text(list[index].coinName.toString()),
+                            title: Text(list[index].id.toString()),
+                          ),
+                        );
+                      }
+                      return Container(
+                        margin: const EdgeInsets.all(20),
+                        decoration: const BoxDecoration(
+                          border: Border.fromBorderSide(
+                            BorderSide(
+                              color: Colors.black,
+                              width: 2,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                    child: ListTile(
-                      // add multiple buttons in trailing
-                      trailing: const Text("Owner of this NFT is you"),
-                      leading: Text(list[index].coinName.toString()),
-                      title: Text(list[index].id.toString()),
-                    ),
-                  );
-                }
-                return Container(
-                  margin: const EdgeInsets.all(20),
-                  decoration: const BoxDecoration(
-                    border: Border.fromBorderSide(
-                      BorderSide(
-                        color: Colors.black,
-                        width: 2,
-                      ),
-                    ),
+                        child: ListTile(
+                          // add multiple buttons in trailing
+                          trailing: Text(list[index].owner.toString()),
+                          leading: Text(list[index].coinName.toString()),
+                          title: Text(list[index].id.toString()),
+                        ),
+                      );
+                    },
                   ),
-                  child: ListTile(
-                    // add multiple buttons in trailing
-                    trailing: Text(list[index].owner.toString()),
-                    leading: Text(list[index].coinName.toString()),
-                    title: Text(list[index].id.toString()),
-                  ),
-                );
-              },
-            ),
-          ),
+                ),
         ],
       ),
     );

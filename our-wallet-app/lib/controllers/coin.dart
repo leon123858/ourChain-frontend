@@ -17,6 +17,26 @@ class _CoinState extends State<Coin> {
 
   @override
   Widget build(BuildContext context) {
+    // get provider aid
+    String aid = Provider.of<UserStateProvider>(context, listen: false)
+        .getAidMetaData("aid");
+    if (aid == "") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please login first')),
+      );
+      throw Exception("aid is empty");
+    }
+    // get wallet
+    var wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('wallet is empty'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
     return Scaffold(
       appBar: AppBar(
         title: const Text("add your coin by address"),
@@ -50,28 +70,6 @@ class _CoinState extends State<Coin> {
                   child: ElevatedButton(
                     onPressed: () {
                       if (_formKey.currentState!.validate()) {
-                        // get provider aid
-                        String aid = Provider.of<UserStateProvider>(context,
-                                listen: false)
-                            .getAidMetaData("aid");
-                        if (aid == "") {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Please login first')),
-                          );
-                          return;
-                        }
-                        // get wallet
-                        var wallet = Provider.of<UserStateProvider>(context,
-                                listen: false)
-                            .getWallet;
-                        if (wallet == null) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('wallet is empty'),
-                            ),
-                          );
-                          return;
-                        }
                         // add coin
                         final result =
                             addCoin(aid, addressController.text, wallet);

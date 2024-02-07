@@ -18,6 +18,34 @@ class CustomCoinsState extends State<CustomCoins> {
 
   @override
   Widget build(BuildContext context) {
+    // get current aid
+    String aid = Provider.of<UserStateProvider>(context, listen: false)
+        .getAidMetaData("aid");
+    if (aid == '') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('aid is empty'),
+        ),
+      );
+      throw Exception("aid is empty");
+    }
+    // get current wallet
+    Wallet? wallet =
+        Provider.of<UserStateProvider>(context, listen: false).wallet;
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('wallet is empty'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
+    // get coin list
+    getCoinList(aid, wallet).then((result) {
+      setState(() {
+        _coinList = result;
+      });
+    });
     return DefaultTabController(
       length: 1,
       child: Column(
@@ -28,46 +56,26 @@ class CustomCoinsState extends State<CustomCoins> {
               const Text("Coins Operations"),
               IconButton(
                   icon: const Icon(Icons.refresh),
-                  onPressed: () {
-                    // get current aid
-                    String aid =
-                        Provider.of<UserStateProvider>(context, listen: false)
-                            .getAidMetaData("aid");
-                    if (aid == '') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('aid is empty'),
-                        ),
-                      );
-                      return;
-                    }
-                    // get current wallet
-                    Wallet? wallet =
-                        Provider.of<UserStateProvider>(context, listen: false)
-                            .wallet;
-                    if (wallet == null) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('wallet is empty'),
-                        ),
-                      );
-                      return;
-                    }
+                  onPressed: () async {
                     // get coin list
-                    getCoinList(aid, wallet)
-                        .then((coinList) => {
-                              setState(() {
-                                _coinList = coinList;
-                              }),
-                            })
-                        .catchError((e) => {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content:
-                                      Text('get coin list unexpected failed'),
-                                ),
-                              ),
-                            });
+                    try {
+                      var coinList = await getCoinList(aid, wallet);
+                      setState(() {
+                        _coinList = coinList;
+                      });
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('get coin list success'),
+                        ),
+                      );
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('get coin list failed'),
+                        ),
+                      );
+                    }
                   }),
             ],
           ),

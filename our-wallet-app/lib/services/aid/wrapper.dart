@@ -79,7 +79,8 @@ Future<bool> removeCoin(
   return true;
 }
 
-Future<bool> buyCoin(String coinAddress, String srcAid, String targetAid, int count,Wallet wallet) async {
+Future<bool> buyCoin(String coinAddress, String srcAid, String targetAid,
+    int count, Wallet wallet) async {
   var result = await callContract(
       targetAddress: coinAddress,
       privateKey: wallet.privateKey,
