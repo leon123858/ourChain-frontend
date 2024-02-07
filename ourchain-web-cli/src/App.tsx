@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Layout, Menu, theme} from 'antd';
+import {Button, Layout, Menu, Modal, Spin, theme} from 'antd';
 import InputPanel from "./components/InputPanel.tsx";
 import ScannerPanel from "./components/ScannerPanel.tsx";
 import {config} from "./utils/config.ts";
@@ -12,6 +12,7 @@ const App: React.FC = () => {
         token: {colorBgContainer},
     } = theme.useToken();
     const [page, setPage] = React.useState("wallet")
+    const [loading, setLoading] = React.useState(false)
 
     let pageContent = <div>404</div>
     switch (page) {
@@ -25,7 +26,7 @@ const App: React.FC = () => {
 
     return (
         <Layout style={{}}>
-            <Header style={{display: 'flex', alignItems: 'center'}}>
+            <Header>
                 <Menu theme="dark" mode="horizontal" selectedKeys={[page]} items={[
                     {
                         key: "wallet",
@@ -45,17 +46,24 @@ const App: React.FC = () => {
             <Layout>
                 <Sider width={200} style={{background: colorBgContainer}}>
                     <Button style={{width: "100%", marginTop: "10%"}} onClick={async () => {
-                        // POST http://localhost:8080/block/generate
-                        const res = await fetch(`${BASE_URL}block/generate`, {
-                            method: "POST",
-                            headers: {
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({})
-                        })
-                        const json = await res.json()
-                        console.log(json)
-                        alert(json.result)
+                        setLoading(true)
+                        try {
+                            // POST http://localhost:8080/block/generate
+                            const res = await fetch(`${BASE_URL}block/generate`, {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({})
+                            })
+                            const json = await res.json()
+                            console.log(json)
+                            Modal.info({title: "挖礦結果", content: json.result === "success" ? "成功" : "失敗"})
+                        }catch (e) {
+                            alert(e)
+                        }finally {
+                            setLoading(false)
+                        }
                     }}>加速挖礦</Button>
                     <Button style={{width: "100%", marginTop: "10%"}} onClick={async () => {
                         const address = prompt("請輸入地址")
@@ -81,6 +89,14 @@ const App: React.FC = () => {
                     </Content>
                 </Layout>
             </Layout>
+            <Modal
+                title="loading"
+                open={loading}
+                footer={null}
+            >
+                <Spin spinning={loading}>
+                </Spin>
+            </Modal>
         </Layout>
     );
 };

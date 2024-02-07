@@ -1,4 +1,4 @@
-import {Button, Input, message, Select, Typography} from "antd";
+import {Button, Input, message, Modal, Select, Spin, Typography} from "antd";
 import React from "react";
 import InputContractExtend from "./InputContractExtend.tsx";
 import {callContract, deployContract, sendMoney} from "../utils/txApiWrapper.ts";
@@ -18,6 +18,7 @@ function InputTxBox({privateKey, ownerAddress}:
     const [srcCode, setSrcCode] = React.useState("")
     const [address, setAddress] = React.useState("")
     const [contractArguments, setContractArguments] = React.useState([""])
+    const [loading, setLoading] = React.useState(false)
     return <>
         <div>
             <Typography.Title level={5}>Transaction</Typography.Title>
@@ -49,6 +50,7 @@ function InputTxBox({privateKey, ownerAddress}:
             {mode !== TxMode.Normal ? <InputContractExtend contractArguments={contractArguments}
                                                            setContractArguments={setContractArguments}/> : null}
             <Button onClick={async () => {
+                setLoading(true)
                 try {
                     switch (mode) {
                         case TxMode.Normal:
@@ -67,10 +69,15 @@ function InputTxBox({privateKey, ownerAddress}:
                 }catch (e) {
                     console.error(e)
                     message.error("區塊鏈交易失敗, 請多嘗試幾次")
+                }finally {
+                    setLoading(false)
                 }
 
             }}>送出</Button>
         </div>
+        <Modal title="transaction" footer={null} open={loading} >
+            <Spin spinning={loading} />
+        </Modal>
     </>
 }
 

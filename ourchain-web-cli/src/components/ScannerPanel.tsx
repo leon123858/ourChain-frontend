@@ -1,21 +1,29 @@
-import {List, Typography} from "antd";
+import {List, Modal, Spin, Typography} from "antd";
 import React, {useEffect} from "react";
 import {config} from "../utils/config.ts";
 const BASE_URL = config.BASE_URL;
 
 function ScannerPanel() {
     const [utxoList, setUtxoList] = React.useState([])
+    const [loading, setLoading] = React.useState(false)
 
     useEffect(() => {
-        // GET http://localhost:8080/get/utxo
-        fetch(`${BASE_URL}get/utxo`).then(res => res.json()).then(json => {
-            console.log(json)
-            if (json.result !== "success") {
-                alert("error")
-                return
-            }
-            setUtxoList(json.data)
-        })
+        setLoading(true)
+        try {
+            // GET http://localhost:8080/get/utxo
+            fetch(`${BASE_URL}get/utxo`).then(res => res.json()).then(json => {
+                console.log(json)
+                if (json.result !== "success") {
+                    alert("error")
+                    return
+                }
+                setUtxoList(json.data)
+            })
+        }catch (e) {
+            alert(e)
+        }finally {
+            setLoading(false)
+        }
     }, [])
 
     return (
@@ -36,6 +44,9 @@ function ScannerPanel() {
                     </List.Item>
                 )}
             />
+            <Modal title="fetch utxo" footer={null} open={loading} >
+                <Spin spinning={loading} />
+            </Modal>
         </div>
     )
 }
