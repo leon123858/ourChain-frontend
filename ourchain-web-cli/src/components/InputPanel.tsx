@@ -10,11 +10,13 @@ function InputPanel() {
     const [fixedKey, setFixedKey] = React.useState(false)
 
     return <Flex vertical gap={16}>
-        <InputPrivateKey address={address} setAddress={setAddress} privateKey={privateKey} setPrivateKey={setPrivateKey} fixedKey={fixedKey}
+        <InputPrivateKey address={address} setAddress={setAddress} privateKey={privateKey} setPrivateKey={setPrivateKey}
+                         fixedKey={fixedKey}
                          setFixedKey={setFixedKey}/>
         <InputPureContract/>
         {
-            fixedKey && privateKey.length > 0 ? <InputTxBox ownerAddress={address} privateKey={privateKey}/> : <h3>請輸入私鑰</h3>
+            fixedKey && privateKey.length > 0 ? <InputTxBox ownerAddress={address} privateKey={privateKey}/> :
+                <h3>請輸入私鑰</h3>
         }</Flex>
 }
 

@@ -57,7 +57,7 @@ function InputTxBox({privateKey, ownerAddress}:
                             alert(await sendMoney(0.001, address, privateKey, ownerAddress))
                             break
                         case TxMode.ContractDeploy: {
-                            const result = await deployContract(0.001, "", privateKey, ownerAddress,srcCode, contractArguments)
+                            const result = await deployContract(0.001, "", privateKey, ownerAddress, srcCode, contractArguments)
                             alert(result.txid)
                             alert("address: " + result.contractAddress)
                             break
@@ -66,17 +66,17 @@ function InputTxBox({privateKey, ownerAddress}:
                             alert(await callContract(0.001, address, privateKey, ownerAddress, "", contractArguments))
                             break
                     }
-                }catch (e) {
+                } catch (e) {
                     console.error(e)
                     message.error("區塊鏈交易失敗, 請多嘗試幾次")
-                }finally {
+                } finally {
                     setLoading(false)
                 }
 
             }}>送出</Button>
         </div>
-        <Modal title="transaction" footer={null} open={loading} >
-            <Spin spinning={loading} />
+        <Modal title="transaction" footer={null} open={loading}>
+            <Spin spinning={loading}/>
         </Modal>
     </>
 }

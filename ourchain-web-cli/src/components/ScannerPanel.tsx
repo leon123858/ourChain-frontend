@@ -1,6 +1,7 @@
-import {List, Modal, Spin, Typography} from "antd";
+import {Card, List, Modal, Spin} from "antd";
 import React, {useEffect} from "react";
 import {config} from "../utils/config.ts";
+
 const BASE_URL = config.BASE_URL;
 
 function ScannerPanel() {
@@ -19,9 +20,9 @@ function ScannerPanel() {
                 }
                 setUtxoList(json.data)
             })
-        }catch (e) {
+        } catch (e) {
             alert(e)
-        }finally {
+        } finally {
             setLoading(false)
         }
     }, [])
@@ -40,12 +41,15 @@ function ScannerPanel() {
                     txid: string,
                 }) => (
                     <List.Item>
-                        <Typography.Text mark>[{`${item.txid}`}]</Typography.Text> {`${item.address} : ${item.amount}`}
+                        <Card title={"address:" + item.address} style={{width: "100%"}}>
+                            <p>txid: {item.txid}</p>
+                            <p>amount: {item.amount}</p>
+                        </Card>
                     </List.Item>
                 )}
             />
-            <Modal title="fetch utxo" footer={null} open={loading} >
-                <Spin spinning={loading} />
+            <Modal title="fetch utxo" footer={null} open={loading}>
+                <Spin spinning={loading}/>
             </Modal>
         </div>
     )

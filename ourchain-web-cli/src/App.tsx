@@ -3,6 +3,8 @@ import {Button, Layout, Menu, Modal, Spin, theme} from 'antd';
 import InputPanel from "./components/InputPanel.tsx";
 import ScannerPanel from "./components/ScannerPanel.tsx";
 import {config} from "./utils/config.ts";
+import {ContractScanner} from "./components/ContractScanner.tsx";
+
 const BASE_URL = config.BASE_URL;
 
 const {Header, Content, Sider} = Layout;
@@ -22,6 +24,9 @@ const App: React.FC = () => {
         case "scanner":
             pageContent = <ScannerPanel/>
             break
+        case "contract":
+            pageContent = <ContractScanner/>
+            break
     }
 
     return (
@@ -39,6 +44,12 @@ const App: React.FC = () => {
                         label: "scanner",
                         onClick: () => {
                             setPage("scanner")
+                        }
+                    }, {
+                        key: "contract",
+                        label: "contract",
+                        onClick: () => {
+                            setPage("contract")
                         }
                     }
                 ]}/>
@@ -59,9 +70,9 @@ const App: React.FC = () => {
                             const json = await res.json()
                             console.log(json)
                             Modal.info({title: "挖礦結果", content: json.result === "success" ? "成功" : "失敗"})
-                        }catch (e) {
+                        } catch (e) {
                             alert(e)
-                        }finally {
+                        } finally {
                             setLoading(false)
                         }
                     }}>加速挖礦</Button>

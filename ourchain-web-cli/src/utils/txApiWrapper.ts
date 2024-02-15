@@ -1,4 +1,5 @@
 import {config} from './config.ts';
+
 const BASE_URL = config.BASE_URL;
 
 async function getUtxo(fee = 0.0001, targetAddress = '', ownerAddress = '') {

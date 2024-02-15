@@ -30,8 +30,8 @@ function InputPureContract({}: {}) {
                 }
             }}>送出</Button>
         </div>
-        <Modal title="fetch contract message" footer={null} open={loading} >
-            <Spin spinning={loading} />
+        <Modal title="fetch contract message" footer={null} open={loading}>
+            <Spin spinning={loading}/>
         </Modal>
     </>
 }

@@ -1,10 +1,10 @@
 import {Input, Switch, Typography} from "antd";
 import React from "react";
 
-function InputPrivateKey({address, setAddress,privateKey, setPrivateKey, fixedKey, setFixedKey,}:
+function InputPrivateKey({address, setAddress, privateKey, setPrivateKey, fixedKey, setFixedKey,}:
                              {
-                                    address: string,
-                                    setAddress: React.Dispatch<React.SetStateAction<string>>,
+                                 address: string,
+                                 setAddress: React.Dispatch<React.SetStateAction<string>>,
                                  privateKey: string,
                                  setPrivateKey: React.Dispatch<React.SetStateAction<string>>,
                                  fixedKey: boolean
