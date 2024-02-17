@@ -1,4 +1,4 @@
-import {Button, Input, message, Modal, Select, Spin, Typography} from "antd";
+import {Button, Input, InputNumber, message, Modal, Select, Spin, Typography} from "antd";
 import React from "react";
 import InputContractExtend from "./InputContractExtend.tsx";
 import {callContract, deployContract, sendMoney} from "../utils/txApiWrapper.ts";
@@ -18,6 +18,7 @@ function InputTxBox({privateKey, ownerAddress}:
     const [srcCode, setSrcCode] = React.useState("")
     const [address, setAddress] = React.useState("")
     const [contractArguments, setContractArguments] = React.useState([""])
+    const [sendNumber, setSendNumber] = React.useState(0.001)
     const [loading, setLoading] = React.useState(false)
     return <>
         <div>
@@ -49,12 +50,17 @@ function InputTxBox({privateKey, ownerAddress}:
 
             {mode !== TxMode.Normal ? <InputContractExtend contractArguments={contractArguments}
                                                            setContractArguments={setContractArguments}/> : null}
+            {mode == TxMode.Normal ? <InputNumber value={sendNumber} onChange={e=> {
+                if (typeof e === "number") {
+                    setSendNumber(e)
+                }
+            }}></InputNumber> : null}
             <Button onClick={async () => {
                 setLoading(true)
                 try {
                     switch (mode) {
                         case TxMode.Normal:
-                            alert(await sendMoney(0.001, address, privateKey, ownerAddress))
+                            alert(await sendMoney(0.001, address, privateKey, ownerAddress, sendNumber))
                             break
                         case TxMode.ContractDeploy: {
                             const result = await deployContract(0.001, "", privateKey, ownerAddress, srcCode, contractArguments)

@@ -2,6 +2,59 @@ import {config} from './config.ts';
 
 const BASE_URL = config.BASE_URL;
 
+// use on send money tx, get utxo List for the ownerAddress
+async function getUtxoList(fee = 0.0001, targetAddress = '', ownerAddress = '', amount = 0) {
+    // GET http://localhost:8080/get/utxo
+    const result = await fetch(
+        `${BASE_URL}get/utxo?address=${ownerAddress}`,
+        {method: 'GET'}
+    );
+    const json = await result.json();
+    if (json.result !== 'success') {
+        console.error('Error: ', json);
+        return;
+    }
+    const utxoList = json.data;
+    // random 排序 utxoList
+    utxoList.sort(() => Math.random() - 0.5);
+    let totalAmount = amount + fee;
+    const inputList = [];
+    for (let i = 0; i < utxoList.length; i++) {
+        inputList.push({
+            txid: utxoList[i].txid,
+            vout: utxoList[i].vout,
+            amount: utxoList[i].amount,
+        });
+        totalAmount -= utxoList[i].amount;
+        if (totalAmount <= 0) {
+            break;
+        }
+    }
+    if (totalAmount > 0) {
+        console.error('Error: not enough money');
+        throw new Error('Error: not enough money');
+    }
+    const outputList = [];
+    const currentAmount = inputList.reduce((acc, cur) => acc + cur.amount, 0);
+    const charge = currentAmount - amount - fee;
+    if (charge > 0) {
+        outputList.push({
+            address: ownerAddress,
+            amount: charge,
+        });
+    }
+    outputList.push({
+        address: targetAddress,
+        amount: amount,
+    });
+    console.log(currentAmount, amount, fee, charge, inputList, outputList)
+    return {
+        inputs: inputList,
+        outputs: outputList,
+    };
+}
+
+// use on contract tx, get an utxo for the ownerAddress
 async function getUtxo(fee = 0.0001, targetAddress = '', ownerAddress = '') {
     // GET http://localhost:8080/get/utxo
     const utxoResult = await fetch(
@@ -131,18 +184,35 @@ export async function sendMoney(
     fee = 0.0001,
     targetAddress = '',
     privateKey = '',
-    ownerAddress = ''
+    ownerAddress = '',
+    amount = 0,
 ) {
-    const rawTx = await createTx(fee, targetAddress, ownerAddress, {
-        action: 0,
-        code: '',
-        address: '',
-        args: [],
-    });
-    if (!rawTx) {
-        throw new Error('Error: no rawTx available');
+    const utxoList = await getUtxoList(fee, targetAddress, ownerAddress, amount);
+    if (!utxoList) {
+        throw new Error('Error: no utxoList available');
     }
-    const signedTx = await signContract(rawTx.hex, privateKey);
+    const result = await fetch(`${BASE_URL}rawtransaction/create`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            inputs: [...utxoList.inputs],
+            outputs: [...utxoList.outputs],
+            contract: {
+                action: 0,
+                code: '',
+                address: '',
+                args: [],
+            },
+        }),
+    });
+    const json = await result.json();
+    if (json.result !== 'success') {
+        console.error('Error: ', json);
+        return;
+    }
+    const signedTx = await signContract(json.data.hex, privateKey);
     if (!signedTx) {
         throw new Error('Error: no signedTx available');
     }
