@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:our_wallet_app/services/chain/contract.dart';
 import 'package:our_wallet_app/services/wallet/wrapper.dart';
 
+import '../orc20/wrapper.dart';
+
 Future<bool> register(String name, String password, Wallet wallet) async {
   var result = await callContract(
       targetAddress: wallet.getAidAddress(),
@@ -50,6 +52,12 @@ Future<List<String>> getCoinList(String userAid, Wallet wallet) async {
     return resultJson['coins'].cast<String>();
   }
   return [];
+}
+
+Future<List<String>> getCoinNameList(List<String> coins, Wallet wallet) async {
+  return Future.wait(coins.map((coin) async {
+    return (await getNFTList(coin, wallet.getNodeUrl()))[0].coinName;
+  }));
 }
 
 Future<bool> addCoin(String userAid, String coinAddress, Wallet wallet) async {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:our_wallet_app/widgets/userProvider.dart';
 import 'package:provider/provider.dart';
 
@@ -8,9 +9,10 @@ import '../services/aid/wrapper.dart';
 import '../services/wallet/wrapper.dart';
 
 class CoinList extends StatelessWidget {
-  const CoinList({Key? key, required this.list}) : super(key: key);
+  const CoinList({Key? key, required this.list, required this.nameList}) : super(key: key);
 
   final List<String> list;
+  final List<String> nameList;
 
   @override
   Widget build(BuildContext context) {
@@ -51,6 +53,17 @@ class CoinList extends StatelessWidget {
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            IconButton(
+                              icon: const Icon(Icons.copy),
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: list[index]));
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('coin address is copied to clipboard'),
+                                  ),
+                                );
+                              },
+                            ),
                             IconButton(
                               icon: const Icon(Icons.edit),
                               onPressed: () {
@@ -123,7 +136,7 @@ class CoinList extends StatelessWidget {
                           ],
                         ),
                         leading: const Icon(Icons.money),
-                        title: Text(list[index]),
+                        title: Text(nameList[index]),
                       ),
                     );
                   },

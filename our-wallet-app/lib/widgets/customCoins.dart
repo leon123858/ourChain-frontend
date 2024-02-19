@@ -15,6 +15,7 @@ class CustomCoins extends StatefulWidget {
 
 class CustomCoinsState extends State<CustomCoins> {
   List<String> _coinList = [];
+  List<String> _nameList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -41,9 +42,11 @@ class CustomCoinsState extends State<CustomCoins> {
       throw Exception("wallet is empty");
     }
     // get coin list
-    getCoinList(aid, wallet).then((result) {
+    getCoinList(aid, wallet).then((result) async {
+      final newNames = await getCoinNameList(result, wallet);
       setState(() {
         _coinList = result;
+        _nameList = newNames;
       });
     });
     return DefaultTabController(
@@ -91,7 +94,7 @@ class CustomCoinsState extends State<CustomCoins> {
             height: 500,
             child: TabBarView(
               children: [
-                CoinList(list: _coinList),
+                CoinList(list: _coinList, nameList: _nameList),
               ],
             ),
           ),
