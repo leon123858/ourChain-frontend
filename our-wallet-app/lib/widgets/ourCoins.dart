@@ -13,11 +13,11 @@ class OurCoins extends StatefulWidget {
 
 class _OurCoinsState extends State<OurCoins> {
   double _ourCoin = 0;
-
+  Wallet? wallet;
   @override
-  Widget build(BuildContext context) {
-    // get current wallet
-    Wallet? wallet =
+  void initState() {
+    super.initState();
+    wallet =
         Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -28,11 +28,24 @@ class _OurCoinsState extends State<OurCoins> {
       throw Exception("wallet is empty");
     }
     // get balance
-    wallet.getBalance().then((value) {
+    wallet?.getBalance().then((value) {
       setState(() {
         _ourCoin = value;
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (wallet == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please create wallet first'),
+        ),
+      );
+      throw Exception("wallet is empty");
+    }
+    // get current wallet
     return Container(
         margin: const EdgeInsets.all(16),
         decoration: const BoxDecoration(
@@ -64,9 +77,9 @@ class _OurCoinsState extends State<OurCoins> {
               icon: const Icon(Icons.refresh),
               onPressed: () async {
                 // get balance
-                var balance = await wallet.getBalance();
+                var balance = await wallet?.getBalance();
                 setState(() {
-                  _ourCoin = balance;
+                  _ourCoin = balance!;
                 });
               },
             ),

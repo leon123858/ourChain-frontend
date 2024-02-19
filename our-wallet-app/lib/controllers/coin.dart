@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:our_wallet_app/services/aid/wrapper.dart';
 import 'package:provider/provider.dart';
 
+import '../services/wallet/wrapper.dart';
 import '../widgets/userProvider.dart';
 
 class Coin extends StatefulWidget {
@@ -14,21 +15,24 @@ class Coin extends StatefulWidget {
 class _CoinState extends State<Coin> {
   final _formKey = GlobalKey<FormState>();
   TextEditingController addressController = TextEditingController();
+  String aid = "";
+  Wallet? wallet;
 
   @override
-  Widget build(BuildContext context) {
-    // get provider aid
-    String aid = Provider.of<UserStateProvider>(context, listen: false)
+  void initState() {
+    super.initState();
+    aid = Provider.of<UserStateProvider>(context, listen: false)
         .getAidMetaData("aid");
+    wallet =
+        Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (aid == "") {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please login first')),
+        const SnackBar(
+          content: Text('aid is empty'),
+        ),
       );
       throw Exception("aid is empty");
     }
-    // get wallet
-    var wallet =
-        Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -37,6 +41,10 @@ class _CoinState extends State<Coin> {
       );
       throw Exception("wallet is empty");
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("add your coin by address"),
@@ -72,7 +80,7 @@ class _CoinState extends State<Coin> {
                       if (_formKey.currentState!.validate()) {
                         // add coin
                         final result =
-                            addCoin(aid, addressController.text, wallet);
+                            addCoin(aid, addressController.text, wallet!);
                         result.then((value) => {
                               if (value)
                                 {

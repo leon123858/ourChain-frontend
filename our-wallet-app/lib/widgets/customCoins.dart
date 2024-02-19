@@ -16,12 +16,17 @@ class CustomCoins extends StatefulWidget {
 class CustomCoinsState extends State<CustomCoins> {
   List<String> _coinList = [];
   List<String> _nameList = [];
+  // context
+  String aid = "";
+  Wallet? wallet;
 
   @override
-  Widget build(BuildContext context) {
-    // get current aid
-    String aid = Provider.of<UserStateProvider>(context, listen: false)
+  void initState() {
+    super.initState();
+    aid = Provider.of<UserStateProvider>(context, listen: false)
         .getAidMetaData("aid");
+    wallet =
+        Provider.of<UserStateProvider>(context, listen: false).wallet;
     if (aid == '') {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -30,9 +35,6 @@ class CustomCoinsState extends State<CustomCoins> {
       );
       throw Exception("aid is empty");
     }
-    // get current wallet
-    Wallet? wallet =
-        Provider.of<UserStateProvider>(context, listen: false).wallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -42,13 +44,17 @@ class CustomCoinsState extends State<CustomCoins> {
       throw Exception("wallet is empty");
     }
     // get coin list
-    getCoinList(aid, wallet).then((result) async {
-      final newNames = await getCoinNameList(result, wallet);
+    getCoinList(aid, wallet!).then((result) async {
+      final newNames = await getCoinNameList(result, wallet!);
       setState(() {
         _coinList = result;
         _nameList = newNames;
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return DefaultTabController(
       length: 1,
       child: Column(
@@ -62,7 +68,7 @@ class CustomCoinsState extends State<CustomCoins> {
                   onPressed: () async {
                     // get coin list
                     try {
-                      var coinList = await getCoinList(aid, wallet);
+                      var coinList = await getCoinList(aid, wallet!);
                       setState(() {
                         _coinList = coinList;
                       });

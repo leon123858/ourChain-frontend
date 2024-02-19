@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:our_wallet_app/services/wallet/wrapper.dart';
 import 'package:provider/provider.dart';
 
 import '../services/orc20/wrapper.dart';
@@ -21,10 +22,13 @@ class _NFTState extends State<NFT> {
   TextEditingController countController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
 
+  Wallet? wallet;
+  String aid = "";
+
   @override
-  Widget build(BuildContext context) {
-    // get wallet
-    var wallet =
+  void initState() {
+    super.initState();
+    wallet =
         Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -34,8 +38,7 @@ class _NFTState extends State<NFT> {
       );
       throw Exception("wallet is empty");
     }
-    // get provider aid
-    String aid = Provider.of<UserStateProvider>(context, listen: false)
+    aid = Provider.of<UserStateProvider>(context, listen: false)
         .getAidMetaData("aid");
     if (aid == "") {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -43,12 +46,15 @@ class _NFTState extends State<NFT> {
       );
       throw Exception("aid is empty");
     }
-    // get NFT list
-    getNFTList(widget.address, wallet.getNodeUrl()).then((result) {
+    getNFTList(widget.address, wallet!.getNodeUrl()).then((result) {
       setState(() {
         list = result;
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("setting your NFT here"),
@@ -64,7 +70,7 @@ class _NFTState extends State<NFT> {
                   // get coin list
                   try {
                     var result =
-                        await getNFTList(widget.address, wallet.getNodeUrl());
+                        await getNFTList(widget.address, wallet!.getNodeUrl());
                     setState(() {
                       list = result;
                     });
@@ -169,7 +175,7 @@ class _NFTState extends State<NFT> {
                                 targetAidController.text,
                                 count!,
                                 passwordController.text,
-                                wallet);
+                                wallet!);
                             if (!context.mounted) return;
                             if (result) {
                               ScaffoldMessenger.of(context).showSnackBar(

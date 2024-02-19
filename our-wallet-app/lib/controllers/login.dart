@@ -64,7 +64,8 @@ class _LoginState extends State<Login> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     // get username and password from shared preferences
     SharedPreferences.getInstance().then((prefs) {
       String? username = prefs.getString('username');
@@ -79,12 +80,16 @@ class _LoginState extends State<Login> {
     });
     // set wallet in disk to provider
     WalletBuilder().fromLocal().then((value) => {
-          if (value.isWalletExist())
-            {
-              Provider.of<UserStateProvider>(context, listen: false)
-                  .setWallet(value.build()),
-            }
-        });
+      if (value.isWalletExist())
+        {
+          Provider.of<UserStateProvider>(context, listen: false)
+              .setWallet(value.build()),
+        }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),

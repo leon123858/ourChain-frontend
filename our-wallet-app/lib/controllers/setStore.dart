@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/store/wrapper.dart';
+import '../services/wallet/wrapper.dart';
 import '../widgets/userProvider.dart';
 
 class MyStore extends StatefulWidget {
@@ -23,9 +24,12 @@ class _MyStoreState extends State<MyStore> {
   var productPriceInput = TextEditingController();
   var productAddressInput = TextEditingController();
 
+  Wallet? wallet;
+
   @override
-  Widget build(BuildContext context) {
-    var wallet =
+  void initState() {
+    super.initState();
+    wallet =
         Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -35,6 +39,10 @@ class _MyStoreState extends State<MyStore> {
       );
       throw Exception("wallet is empty");
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("setting your Store here"),
@@ -43,7 +51,7 @@ class _MyStoreState extends State<MyStore> {
         Center(
             child: ElevatedButton(
           onPressed: () async {
-            storeWrapper = await StoreWrapper.create(wallet, widget.userAid);
+            storeWrapper = await StoreWrapper.create(wallet!, widget.userAid);
             if (!context.mounted) return;
             if (storeWrapper!.name == "") {
               ScaffoldMessenger.of(context).showSnackBar(
@@ -114,7 +122,7 @@ class _MyStoreState extends State<MyStore> {
                         // check valid data input
                         if (_formKey1.currentState!.validate()) {
                           final result = await storeWrapper!.setStoreInfo(
-                              wallet, storeNameInput.text, passwordInput.text);
+                              wallet!, storeNameInput.text, passwordInput.text);
                           if (!context.mounted) return;
                           if (result) {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -233,9 +241,9 @@ class _MyStoreState extends State<MyStore> {
                           if (_formKey2.currentState!.validate()) {
                             int price = int.parse(productPriceInput.text);
                             storeWrapper ??= await StoreWrapper.create(
-                                wallet, widget.userAid);
+                                wallet!, widget.userAid);
                             final result = await storeWrapper!.addProduct(
-                                wallet,
+                                wallet!,
                                 productNameInput.text,
                                 passwordInput.text,
                                 price,
@@ -262,9 +270,9 @@ class _MyStoreState extends State<MyStore> {
                         onPressed: () async {
                           if (_formKey2.currentState!.validate()) {
                             storeWrapper ??= await StoreWrapper.create(
-                                wallet, widget.userAid);
+                                wallet!, widget.userAid);
                             final result = await storeWrapper!.removeProduct(
-                                wallet,
+                                wallet!,
                                 passwordInput.text,
                                 productNameInput.text);
                             if (!context.mounted) return;

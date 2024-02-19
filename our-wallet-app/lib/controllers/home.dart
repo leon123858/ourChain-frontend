@@ -23,8 +23,8 @@ class HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    _userName = Provider.of<UserStateProvider>(context, listen: true).getName;
-    _aid = Provider.of<UserStateProvider>(context, listen: true)
+    _userName = Provider.of<UserStateProvider>(context, listen: false).getName;
+    _aid = Provider.of<UserStateProvider>(context, listen: false)
         .getAidMetaData("aid");
     return Scaffold(
       appBar: AppBar(

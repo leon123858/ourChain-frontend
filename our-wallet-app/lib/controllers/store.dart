@@ -24,7 +24,8 @@ class _StoreState extends State<Store> {
   String? userAid;
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     wallet = Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -44,7 +45,10 @@ class _StoreState extends State<Store> {
         list = result;
       });
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Store Page"),

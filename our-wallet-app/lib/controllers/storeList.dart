@@ -3,6 +3,7 @@ import 'package:our_wallet_app/controllers/store.dart';
 import 'package:provider/provider.dart';
 
 import '../services/store/wrapper.dart';
+import '../services/wallet/wrapper.dart';
 import '../widgets/userProvider.dart';
 
 class StoreList extends StatefulWidget {
@@ -14,11 +15,12 @@ class StoreList extends StatefulWidget {
 
 class _StoreListState extends State<StoreList> {
   List<AbstractStore> list = [];
+  Wallet? wallet;
 
   @override
-  Widget build(BuildContext context) {
-    var wallet =
-        Provider.of<UserStateProvider>(context, listen: false).getWallet;
+  void initState() {
+    super.initState();
+    wallet = Provider.of<UserStateProvider>(context, listen: false).getWallet;
     if (wallet == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -28,12 +30,16 @@ class _StoreListState extends State<StoreList> {
       throw Exception("wallet is empty");
     }
     // get store list
-    getStoreList(wallet).then((result) {
+    getStoreList(wallet!).then((result) {
       if (!context.mounted) return;
       setState(() {
         list = result;
       });
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Mall Page"),
@@ -42,7 +48,7 @@ class _StoreListState extends State<StoreList> {
         Center(
             child: ElevatedButton(
           onPressed: () async {
-            var result = await getStoreList(wallet);
+            var result = await getStoreList(wallet!);
             if (!context.mounted) return;
             setState(() {
               list = result;

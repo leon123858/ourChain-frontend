@@ -19,27 +19,32 @@ class _ConfigState extends State<Config> {
   TextEditingController privateKeyController = TextEditingController();
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     Wallet tmp;
     WalletBuilder().fromLocal().then((value) => {
-          if (value.isWalletExist())
-            {
-              tmp = value.build(),
-              nodeUrlController.text = tmp.getNodeUrl(),
-              aidAddressController.text = tmp.getAidAddress(),
-              storeAddressController.text = tmp.getStoreAddress(),
-              publicKeyController.text = tmp.getAddress(),
-              privateKeyController.text = tmp.getPrivateKey(),
-            }
-          else
-            {
-              nodeUrlController.text = baseUrl,
-              aidAddressController.text = aidAddress,
-              storeAddressController.text = storeAddress,
-              publicKeyController.text = defaultPublicKey,
-              privateKeyController.text = defaultPrivateKey,
-            }
-        });
+      if (value.isWalletExist())
+        {
+          tmp = value.build(),
+          nodeUrlController.text = tmp.getNodeUrl(),
+          aidAddressController.text = tmp.getAidAddress(),
+          storeAddressController.text = tmp.getStoreAddress(),
+          publicKeyController.text = tmp.getAddress(),
+          privateKeyController.text = tmp.getPrivateKey(),
+        }
+      else
+        {
+          nodeUrlController.text = baseUrl,
+          aidAddressController.text = aidAddress,
+          storeAddressController.text = storeAddress,
+          publicKeyController.text = defaultPublicKey,
+          privateKeyController.text = defaultPrivateKey,
+        }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text("set your wallet config"),
