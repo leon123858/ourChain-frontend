@@ -1,0 +1,137 @@
+openapi: 3.0.3
+info:
+  title: AID 0.1.0
+  description: |-
+    This is a auth service base on ourChain protocol
+  contact:
+    email: a0970785699@gmail.com
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.11
+externalDocs:
+  description: Find out more about AID
+  url: https://github.com/leon123858/AID
+servers:
+  - url: http://127.0.0.1:3000
+tags:
+  - name: private
+    description: 用戶可以在自行運轉的節點調用, 需個人金鑰
+  - name: api
+    description: 用戶透過此類 API 使用 AID 服務
+paths:
+  /private/create:
+    post:
+      tags:
+        - private
+      summary: create a AID smart contract in blockchain
+      description: be used when user want to create a contract of AID
+      operationId: privatecreate
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+        - api_key: ['holdNode']
+  /api/register/{contractId}:
+    post:
+      tags:
+        - api
+      summary: link a AID contract to a AID service provider
+      description: should have a AID service provider have API to let other 3rd party company use
+      operationId: apiregister
+      parameters:
+        - name: contractId
+          in: path
+          description: contractId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: payload for define a user in AID contract
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /api/request/{userName}:
+    get:
+      tags:
+        - api
+      summary: get user message by AID service
+      description: be used when 3rd party service want to let a user login
+      operationId: apirequest
+      parameters:
+        - name: userName
+          in: path
+          description: userName
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+  /api/fetch/{contractId}:
+    get:
+      tags:
+        - api
+      summary: get contract info by 3rd party hold node
+      description: 3rd party service should check AID service's message
+      operationId: apifetch
+      parameters:
+        - name: contractId
+          in: path
+          description: contractId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+      security:
+        - api_key: ['holdNode']
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        name:
+          type: string
+          example: theUser
+        publicKey:
+          type: string
+          description: public key
+          example: iampublickey
+    ApiResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        type:
+          type: string
+        message:
+          type: string
+  securitySchemes:
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
