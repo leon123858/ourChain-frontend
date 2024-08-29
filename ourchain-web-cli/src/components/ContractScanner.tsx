@@ -30,6 +30,10 @@ export const ContractScanner = () => {
                         alert("error")
                         return
                     }
+                    if (!json.data) {
+                        alert("no contract found")
+                        return
+                    }
                     setContractList(json.data)
                 } catch (e) {
                     alert(e)
